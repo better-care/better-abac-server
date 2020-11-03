@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="30">
+    <Appenders>
+        <RollingFile name="file" fileName="abac.log" filePattern="old-%d{yyyy-MM-dd-HH}-%i.log.gz">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %p %c{1}:%L - %m%n</Pattern>
+            </PatternLayout>
+        </RollingFile>
+
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %p %c{1}:%L - %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.springframework" level="info"/>
+        <Logger name="org.hibernate" level="warn"/>
+
+        <Root level="debug">
+            <AppenderRef ref="stdout"/>
+        </Root>
+    </Loggers>
+</Configuration>

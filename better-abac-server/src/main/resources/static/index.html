@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>BetterAbacUi</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <script>
+        function loadJSON(url, callback) {
+            var xobj = new XMLHttpRequest();
+            xobj.overrideMimeType("application/json");
+            xobj.open('GET', url, true);
+            xobj.onreadystatechange = function () {
+                if (xobj.readyState == 4 && xobj.status == "200") {
+                    callback(JSON.parse(xobj.responseText));
+                }else if(parseInt(xobj.status)>=400){
+                    alert("Error loading JSON "+xobj.status)
+                }
+            };
+            xobj.send(null);
+        }
+
+        loadJSON("keycloak.json", function (res) {
+            var authServerUrl = res['auth-server-url'];
+            if(authServerUrl){
+                var keycloakJsPath = authServerUrl + '/js/keycloak.js';
+                var script = document.createElement('script');
+                // script.onload = function () {
+                // };
+                script.src = keycloakJsPath;
+                script.async = true;
+                var head= document.head || document.getElementsByTagName('head')[0];
+                head.appendChild(script);
+
+
+            }else {
+                alert('Could not find "auth-server-url" in keycloak.json file')
+            }
+        })
+    </script>
+    <link rel="stylesheet" href="styles/vendor-c2769e81fe.css">
+    <link rel="stylesheet" href="styles/app-e48290f16c.css">
+</head>
+<body><!--[if lt IE 10]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your
+    experience.</p>
+<![endif]-->
+<div ng-view=""></div>
+<script>
+    console.log('body script executed')
+</script>
+<script src="scripts/vendor-18ce8a9f93.js"></script>
+<script src="scripts/app-6af24d92af.js"></script>
+</body>
+</html>

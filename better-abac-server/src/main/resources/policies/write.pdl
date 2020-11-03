@@ -1,0 +1,5 @@
+DECISION hasRelation(ctx.user, 'PERSONAL_PHYSICIAN', ctx.patient)
+YES: ALLOW
+NO: DECISION matchRelations(ctx.user, 'MEMBER_OF', ctx.patient, 'ON_WARD')
+    YES: ALLOW
+    NO: DENY

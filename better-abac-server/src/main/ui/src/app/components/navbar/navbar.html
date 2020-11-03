@@ -1,0 +1,16 @@
+<nav class="navbar navbar-default" role="navigation" bs-navbar>
+  <div class="navbar-header">
+    <a class="navbar-brand" href="#">Better ABAC</a>
+  </div>
+  <ul class="nav navbar-nav navbar-left">
+    <li data-match-route="/party"><a href="#/party">Party</a></li>
+    <li data-match-route="/partyRelation"><a href="#/partyRelation">Party Relation</a></li>
+    <li data-match-route="/policy"><a href="#/policy">Policy</a></li>
+    <li data-match-route="/partyType"><a href="#/partyType">Party Type</a></li>
+    <li data-match-route="/relationType"><a href="#/relationType">Relation Type</a></li>
+  </ul>
+  <ul class="nav navbar-nav navbar-right">
+    <li class="navbar-username"><a ng-click="vm.logout()" class="navbar-link"> <span class="glyphicon glyphicon glyphicon-off alert"></span>{{vm.username}}</a>
+    </li>
+  </ul>
+</nav>

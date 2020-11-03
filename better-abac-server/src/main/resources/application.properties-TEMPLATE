@@ -1,0 +1,36 @@
+spring.datasource.url=jdbc:oracle:thin:@//localhost:1524/db12
+spring.datasource.username=username
+spring.datasource.password=password
+spring.jpa.database-platform=org.hibernate.dialect.Oracle12cDialect
+#spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.hibernate.naming-strategy=org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
+spring.jpa.hibernate.ddl-auto=update
+
+spring.jackson.serialization-inclusion=non_null
+spring.jackson.serialization.write_dates_as_timestamps=false
+
+spring.cache.infinispan.config=infinispan.xml
+spring.cache.cache-names=patients,users
+
+partyinfo.services[0].type=USER
+partyinfo.services[0].impl=keycloak
+partyinfo.services[0].data=http://localhost:8080/auth/admin/realms/abac
+partyinfo.services[1].type=PATIENT
+partyinfo.services[1].impl=demographics
+partyinfo.services[1].data=http://localhost:8184/rest/v1/demographics/fhir/abac
+
+# SSO Configuration
+sso.enabled=true
+sso.rolesClientId=abac
+sso.issuer=http://localhost:8080/auth/realms/abac
+sso.jwksEndpoint=http://localhost:8080/auth/realms/abac/protocol/openid-connect/certs
+sso.tokenDataExtractor=keycloak
+sso.rolesPath=/resource_access/abac/roles
+
+# Client authentication
+client.auth.type=oauth2
+spring.security.oauth2.client.registration.oauth2.authorization-grant-type=password
+spring.security.oauth2.client.registration.oauth2.client-id=abac
+spring.security.oauth2.client.provider.oauth2.token-uri=https://localhost/auth/realms/abac/protocol/openid-connect/token
+client.auth.username=username
+client.auth.password=password

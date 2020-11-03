@@ -1,0 +1,42 @@
+<div class="container">
+
+  <div>
+    <acme-navbar></acme-navbar>
+  </div>
+
+  <div ng-if="mainCtrl.selectedEndpoint=='party'" crud-list="mainCtrl.partyList" crud-endpoint="{{mainCtrl.selectedEndpoint}}">
+    <h2>Party</h2>
+    <crud-list-view title-props="id;fullName;type" item-title-generators="mainCtrl.partyTitleGenerators" column-titles="Id;Name;Type">
+      <div party-item-edit crud-item party-type-endpoint="partyType"></div>
+    </crud-list-view>
+  </div>
+
+  <div ng-if="mainCtrl.selectedEndpoint=='partyType'" crud-list="mainCtrl.partyTypeList" crud-list crud-endpoint="{{mainCtrl.selectedEndpoint}}">
+    <h2>Party Type</h2>
+    <crud-list-view title-props="id; name" column-titles="Id;Name">
+      <div party-type-item-edit crud-item></div>
+    </crud-list-view>
+  </div>
+
+  <div ng-if="mainCtrl.selectedEndpoint=='policy'" crud-list="mainCtrl.partyTypeList" crud-endpoint="{{mainCtrl.selectedEndpoint}}">
+    <h2>Policy</h2>
+    <crud-list-view title-props="name">
+      <div policy-item-edit crud-item></div>
+    </crud-list-view>
+  </div>
+
+  <div ng-if="mainCtrl.selectedEndpoint=='relationType'" crud-list="mainCtrl.partyTypeList" crud-endpoint="{{mainCtrl.selectedEndpoint}}">
+    <h2>Relation Type</h2>
+    <crud-list-view  title-props="id; name" column-titles="Id;Name">
+      <div relation-type-item-edit crud-item party-type-endpoint="partyType"></div>
+    </crud-list-view>
+  </div>
+
+  <div ng-if="mainCtrl.selectedEndpoint=='partyRelation'" crud-list="mainCtrl.partyTypeList" crud-endpoint="{{mainCtrl.selectedEndpoint}}">
+    <h2>Party Relation</h2>
+    <crud-list-view title-props="source;relationType; target" item-title-generators="mainCtrl.createPartyRelationTitleGenerators" column-titles="Source;Relation Type; Target">
+      <div party-relation-item-edit crud-item party-endpoint="party" relation-type-endpoint="relationType"></div>
+    </crud-list-view>
+  </div>
+
+</div>

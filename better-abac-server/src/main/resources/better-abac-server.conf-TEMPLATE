@@ -1,0 +1,6 @@
+LOG_FOLDER=log/
+LOG_FILENAME=server.log
+PID_FOLDER=log/
+MODE=service
+JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+JAVA_OPTS=-Xmx512M

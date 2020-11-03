@@ -1,0 +1,4 @@
+ANY_OF(hasRelation(ctx.user, 'PERSONAL_PHYSICIAN', ctx.patient),
+       hasRelation(ctx.user, 'PERSON_OF_TRUST', ctx.patient),
+       matchRelations(ctx.user, 'MEMBER_OF', ctx.patient, 'ON_WARD')
+       )

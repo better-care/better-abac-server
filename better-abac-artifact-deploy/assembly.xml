@@ -1,0 +1,45 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+
+    <id>thinkabac-artifact-deploy</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <includes>
+                <include>*.zip</include>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>*-plugin*.jar</exclude>
+            </excludes>
+            <outputDirectory>.</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/classes</directory>
+            <includes>
+                <include>*-TEMPLATE</include>
+            </includes>
+            <outputDirectory>.</outputDirectory>
+        </fileSet>
+        <!-- Create empty logs and plugins directory for server assembly -->
+        <fileSet>
+            <directory>${project.build.directory}/classes/policies</directory>
+            <outputDirectory>log</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/classes/policies</directory>
+            <outputDirectory>plugins</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+</assembly>
