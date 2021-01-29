@@ -45,7 +45,7 @@ import java.util.List;
 @EnableCaching
 @EntityScan(basePackages = "care.better.abac.jpa.entity")
 @EnableJpaRepositories(repositoryBaseClass = QueryDslRepositoryImpl.class, basePackages = "care.better.abac.jpa.repo")
-@ComponentScan(basePackages = {"care.better.abac.rest", "care.better.abac.audit", "care.better.abac.external"},
+@ComponentScan(basePackages = {"care.better.abac.rest", "care.better.abac.audit", "care.better.abac.external", "care.better.abac.plugin"},
                excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class))
 @Import({PluginConfiguration.class, PolicyConfiguration.class, OAuth2Configuration.class, OAuth2ClientConfiguration.class})
 public class AbacConfiguration {
