@@ -43,7 +43,7 @@ public class PartyRelationAsyncServiceRestController {
             @Value("${async.rest.base-callback-url:#{null}}") String baseCallbackUrl,
             @NonNull List<AsyncPartyRelationService<?>> services) throws UnknownHostException {
 
-        Preconditions.checkArgument(services.stream().anyMatch(service -> service.getEndpointType() != EndpointType.REST),
+        Preconditions.checkArgument(services.isEmpty() || services.stream().anyMatch(service -> service.getEndpointType() != EndpointType.REST),
                                     String.format("Only services with endpoint type %s are supported!", EndpointType.REST.name()));
         String baseUrl;
         if (StringUtils.isNotBlank(baseCallbackUrl)) {
