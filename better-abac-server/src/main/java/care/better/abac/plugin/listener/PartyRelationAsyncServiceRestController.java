@@ -1,5 +1,6 @@
 package care.better.abac.plugin.listener;
 
+import care.better.abac.plugin.PluginManager;
 import com.google.common.base.Preconditions;
 import com.marand.core.Opt;
 import care.better.abac.plugin.EndpointType;
@@ -41,10 +42,7 @@ public class PartyRelationAsyncServiceRestController {
             @Value("${spring.application.name:}") String applicationName,
             @Value("${server.port:}") String serverPort,
             @Value("${async.rest.base-callback-url:#{null}}") String baseCallbackUrl,
-            @NonNull List<AsyncPartyRelationService<?>> services) throws UnknownHostException {
-
-        Preconditions.checkArgument(services.isEmpty() || services.stream().anyMatch(service -> service.getEndpointType() != EndpointType.REST),
-                                    String.format("Only services with endpoint type %s are supported!", EndpointType.REST.name()));
+            @NonNull PluginManager pluginManager) throws UnknownHostException {
         String baseUrl;
         if (StringUtils.isNotBlank(baseCallbackUrl)) {
             baseUrl = getBaseUrl(baseCallbackUrl);
@@ -65,7 +63,8 @@ public class PartyRelationAsyncServiceRestController {
                 baseUrl = StringUtils.isNotBlank(implicitBaseUrl) ? implicitBaseUrl : explicitBaseUrl;
             }
         }
-        this.services = services.stream()
+        services = pluginManager.getServicesOfType(AsyncPartyRelationService.class).values().stream()
+                .filter(service -> service.getEndpointType() == EndpointType.REST)
                 .map(service -> Pair.of(UriUtils.encodePath(service.getId(), "UTF-8"), service))
                 .peek(p -> p.getValue().configureListenerEndpoint(StringUtils.appendIfMissing(baseUrl, "/") + p.getKey()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
