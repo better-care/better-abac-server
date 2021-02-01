@@ -64,6 +64,7 @@ public class PartyRelationAsyncServiceRestController {
             }
         }
         services = pluginManager.getServicesOfType(AsyncPartyRelationService.class).values().stream()
+                .map(svc -> (AsyncPartyRelationService<?>)svc)
                 .filter(service -> service.getEndpointType() == EndpointType.REST)
                 .map(service -> Pair.of(UriUtils.encodePath(service.getId(), "UTF-8"), service))
                 .peek(p -> p.getValue().configureListenerEndpoint(StringUtils.appendIfMissing(baseUrl, "/") + p.getKey()))
