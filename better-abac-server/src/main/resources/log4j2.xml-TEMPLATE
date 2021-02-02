@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration monitorInterval="30">
     <Appenders>
-        <RollingRandomAccessFile name="file" fileName="abac.log" filePattern="abac-%i.log">
+        <RollingRandomAccessFile name="file" fileName="log/abac.log" filePattern="log/abac-%i.log">
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
@@ -20,7 +20,7 @@
     <Loggers>
         <Root level="info">
             <AppenderRef ref="file"/>
-            <AppenderRef ref="console"/>
+            <AppenderRef ref="stdout"/>
         </Root>
     </Loggers>
 </Configuration>

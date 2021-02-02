@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ public class HasAnyValueFunction extends ExecutableFunction {
     public EvaluationExpression hasAnyValueEvaluate(String path, Object... values) {
         return new ValueSetEvaluationExpression(path, Optional.ofNullable(values)
                 .map(v -> Arrays.stream(v)
+                        .filter(Objects::nonNull)
                         .map(Object::toString)
                         .collect(Collectors.toSet()))
                 .orElse(Collections.emptySet()));

@@ -64,12 +64,10 @@ public final class ConvertingPolicyVisitor extends PolicyBaseVisitor<PolicyRule>
         ConversionContext conversionContext = conversionArguments.conversion();
         String conversionName = ctx.conversionName().getText();
         PolicyFunctionParameter[] conversionParameters = extractArguments(conversionArguments.argument());
-        if (operationContext != null)
-        {
+        if (operationContext != null) {
             PolicyRule operation = visitOperation(operationContext);
             return new DecisionConversion(conversionName, operation, conversionParameters);
-        }
-        else if (functionContext != null) {
+        } else if (functionContext != null) {
             PolicyRule function = visitFunction(functionContext);
             return new DecisionConversion(conversionName, function, conversionParameters);
         } else if (conversionContext != null) {

@@ -39,8 +39,8 @@ public class DemographicsPartyInfoService extends AbstractRestPartyInfoService {
 
         List<HttpMessageConverter<?>> messageConverters = getRestTemplate().getMessageConverters();
         Opt<AbstractHttpMessageConverter<?>> jsonConverter = Opt.from(messageConverters.stream()
-                .filter(c -> AbstractHttpMessageConverter.class.isAssignableFrom(c.getClass()))
-                .filter(c -> c.getSupportedMediaTypes().contains(MediaType.APPLICATION_JSON)).findFirst())
+                .filter(converter -> AbstractHttpMessageConverter.class.isAssignableFrom(converter.getClass()))
+                .filter(converter -> converter.getSupportedMediaTypes().contains(MediaType.APPLICATION_JSON)).findFirst())
                 .toType(Object.class);
         jsonConverter.ifPresent(this::addFhirJsonMediaType);
     }

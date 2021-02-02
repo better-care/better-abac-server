@@ -4,6 +4,7 @@ import care.better.core.Opt;
 import care.better.abac.plugin.PluginManager;
 import care.better.abac.plugin.PluginManager.Key;
 import care.better.abac.plugin.spi.Service;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -14,6 +15,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Andrej Dolenc
@@ -32,7 +34,13 @@ public class OnServiceTypeCondition extends SpringBootCondition implements Confi
         MergedAnnotations annotations = metadata.getAnnotations();
 
         if (annotations.isPresent(ConditionalOnServiceType.class)) {
-            PluginManager manager = Opt.resolve(() -> context.getBeanFactory().getBean(PluginManager.class)).get();
+            PluginManager manager;
+            try {
+                manager = Objects.requireNonNull(context.getBeanFactory()).getBean(PluginManager.class);
+            } catch (NoSuchBeanDefinitionException e) {
+                manager = null;
+            }
+
             if (manager == null) {
                 return ConditionOutcome.noMatch(ConditionMessage.empty());
             }

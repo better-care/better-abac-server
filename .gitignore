@@ -33,8 +33,6 @@ log4j2.xml
 *.ipr
 *.iws
 
-## Plugin-specific files:
-
 # IntelliJ
 /out/
 

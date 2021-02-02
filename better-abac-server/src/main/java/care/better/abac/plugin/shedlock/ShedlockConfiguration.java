@@ -62,10 +62,8 @@ public class ShedlockConfiguration implements BeanDefinitionRegistryPostProcesso
         registry.registerBeanDefinition("lockableTaskScheduler", myBeanDefinition);
     }
 
-
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-
     }
 
     public static LockConfiguration create(

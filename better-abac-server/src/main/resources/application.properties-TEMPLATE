@@ -27,6 +27,9 @@ sso.issuer=http://localhost:8080/auth/realms/abac
 sso.jwksEndpoint=http://localhost:8080/auth/realms/abac/protocol/openid-connect/certs
 sso.tokenDataExtractor=keycloak
 sso.rolesPath=/resource_access/abac/roles
+# SSO token attribute mapper
+sso.abac-context-mapping[0].token-attribute-path=workplace_id
+sso.abac-context-mapping[0].context-key=workplaceId
 
 # Client authentication
 client.auth.type=oauth2
@@ -38,3 +41,6 @@ client.auth.password=password
 
 # Async service
 async.rest.base-callback-url=http://localhost:8080/
+
+# Enable external validation
+abac.configValidationEnabled=true

@@ -50,8 +50,8 @@ public class PartyRelationSynchronizer {
         service.providesFor()
                 .forEach(rt -> partyRelationRepository.deleteByPartyAndRelationType(null, null, rt.getName()));
         service.syncInitial(now).stream()
-                .filter(r -> ChangeType.INSERT == r.getChangeType())
-                .forEach(c -> partyRelationRepository.save(create(c)));
+                .filter(change -> ChangeType.INSERT == change.getChangeType())
+                .forEach(change -> partyRelationRepository.save(create(change)));
     }
 
     @Transactional
@@ -59,8 +59,8 @@ public class PartyRelationSynchronizer {
         service.providesFor()
                 .forEach(rt -> partyRelationRepository.deleteByPartyAndRelationType(null, null, rt.getName()));
         service.syncInitial().stream()
-                .filter(r -> ChangeType.INSERT == r.getChangeType())
-                .forEach(c -> partyRelationRepository.save(create(c)));
+                .filter(change -> ChangeType.INSERT == change.getChangeType())
+                .forEach(change -> partyRelationRepository.save(create(change)));
     }
 
     @Transactional
@@ -76,18 +76,18 @@ public class PartyRelationSynchronizer {
     @Transactional
     public void sync(Set<PartyRelationChange> relations) {
         relations.stream()
-                .filter(r -> ChangeType.DELETE == r.getChangeType())
-                .forEach(r -> partyRelationRepository.deleteByPartyAndRelationType(
-                        getFirstExternalId(r.getSourceExternalId()),
-                        getFirstExternalId(r.getTargetExternalId()),
-                        r.getRelationType().getName()));
+                .filter(relation -> ChangeType.DELETE == relation.getChangeType())
+                .forEach(relation -> partyRelationRepository.deleteByPartyAndRelationType(
+                        getFirstExternalId(relation.getSourceExternalId()),
+                        getFirstExternalId(relation.getTargetExternalId()),
+                        relation.getRelationType().getName()));
         relations.stream()
-                .filter(r -> ChangeType.INSERT == r.getChangeType())
-                .forEach(c -> partyRelationRepository.save(create(c)));
+                .filter(relation -> ChangeType.INSERT == relation.getChangeType())
+                .forEach(relation -> partyRelationRepository.save(create(relation)));
     }
 
     private String getFirstExternalId(Set<String> externalIds) {
-        return Optional.ofNullable(externalIds).flatMap(s -> s.stream().findFirst()).orElse(null);
+        return Optional.ofNullable(externalIds).flatMap(ids -> ids.stream().findFirst()).orElse(null);
     }
 
     private PartyRelation create(PartyRelationChange change) {

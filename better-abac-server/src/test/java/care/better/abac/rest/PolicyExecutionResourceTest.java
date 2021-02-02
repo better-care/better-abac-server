@@ -195,7 +195,7 @@ public class PolicyExecutionResourceTest {
         String policyName = "HAS_RELATION_CHAIN_TEST";
         Policy policy = new Policy();
         policy.setName(policyName);
-        policy.setPolicy("hasRelationChain(ctx.user, ctx.patient, 'MEMBER_OF', 'PROVIDES_FOR')");
+        policy.setPolicy("hasRelationChain(ctx.user, ctx.patient, 'MEMBER_OF', 'MANAGES')");
         policyRepository.save(policy);
 
         assertThat(executeSimple(policyName, ImmutableMap.of("user", "user1", "patient", "patient1"))).isEqualTo(HttpStatus.OK);
@@ -284,6 +284,20 @@ public class PolicyExecutionResourceTest {
         assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user", "patient", "?")), path)).isEmpty();
         assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user1", "patient", "?")), path)).isEmpty();
         assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user2", "patient", "?")), path)).isEqualTo(Sets.newHashSet("CarePlan/patient2"));
+    }
+
+    @Test
+    public void executeHasRelationsValueSetConversionPolicy() {
+        String policyName = "HAS_ANY_VALUE_CONVERSION_TEST";
+        Policy policy = new Policy();
+        policy.setName(policyName);
+        policy.setPolicy("prefix(hasAnyValue('Patient.managingOrganization', ctx.workplaceId), 'Organization/')");
+        policyRepository.save(policy);
+
+        EvaluationExpression workplaceId = executeComplex(policyName, ImmutableMap.of("workplaceId", "12345"));
+        assertThat(workplaceId).isNotNull();
+        assertThat(workplaceId).isInstanceOf(ValueSetEvaluationExpression.class);
+        assertThat(((ValueSetEvaluationExpression)workplaceId).getValues()).containsExactly("Organization/12345");
     }
 
     @Test
@@ -383,7 +397,7 @@ public class PolicyExecutionResourceTest {
                 createRelationType("HAS", "USER", "PATIENT");
                 createRelationType("USES", "USER", "PATIENT");
                 createRelationType("MEMBER_OF", "USER", "ORGANIZATION");
-                createRelationType("PROVIDES_FOR", "ORGANIZATION", "PATIENT");
+                createRelationType("MANAGES", "ORGANIZATION", "PATIENT");
                 createRelationType("INCLUDED_IN", "USER", "CARE_TEAM");
                 createRelationType("ASSIGNED_TO", "CARE_TEAM", "STUDY");
                 createRelationType("CONSENTS_TO", "PATIENT", "STUDY");
@@ -419,10 +433,10 @@ public class PolicyExecutionResourceTest {
                 createPartyRelation(user1, org1, "MEMBER_OF");
                 createPartyRelation(user, org, "MEMBER_OF");
 
-                createPartyRelation(org1, patient, "PROVIDES_FOR");
-                createPartyRelation(org1, patient1, "PROVIDES_FOR");
-                createPartyRelation(org2, patient2, "PROVIDES_FOR");
-                createPartyRelation(org2, patient, "PROVIDES_FOR");
+                createPartyRelation(org1, patient, "MANAGES");
+                createPartyRelation(org1, patient1, "MANAGES");
+                createPartyRelation(org2, patient2, "MANAGES");
+                createPartyRelation(org2, patient, "MANAGES");
 
                 createPartyRelation(user, team, "INCLUDED_IN");
                 createPartyRelation(user1, team1, "INCLUDED_IN");

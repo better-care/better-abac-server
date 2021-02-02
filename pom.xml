@@ -4,7 +4,7 @@
 
     <groupId>care.better.abac</groupId>
     <artifactId>better-abac</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.8-SNAPSHOT</version>
     <modules>
         <module>better-abac-artifact-deploy</module>
         <module>better-abac-server</module>
@@ -32,9 +32,25 @@
         <commons-io.version>2.6</commons-io.version>
         <commons-configuration.version>2.7</commons-configuration.version>
         <shedlock.version>4.12.0</shedlock.version>
-        <apt-maven-plugin.version>1.1.3</apt-maven-plugin.version>
-        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <hapi-fhir.version>5.2.0-A3</hapi-fhir.version>
+        <oauth2-autoconfiugere.version>2.0.0.RC2</oauth2-autoconfiugere.version>
+        <nimbus-jose.version>8.9</nimbus-jose.version>
+        <wildfly-common.version>1.5.2.Final</wildfly-common.version>
+        <json-smart.version>2.3</json-smart.version>
+        <javassist.version>3.24.0-GA</javassist.version>
+        <commons-text.version>1.8</commons-text.version>
+        <findbugs.version>3.0.2</findbugs.version>
+        <logging-jboss.version>2.2.1.Final</logging-jboss.version>
+        <javax-el.version>3.0.0</javax-el.version>
+        <osgi-compendium.version>5.0.0</osgi-compendium.version>
+        <osgi-core.version>6.0.0</osgi-core.version>
+        <log4j.version>1.2.17</log4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <log4j2.version>2.17.0</log4j2.version>
+        <db-schema.version>2.0.0</db-schema.version>
+
+        <apt-maven-plugin.version>1.1.3</apt-maven-plugin.version>
+        <enforcer-plugin.version>3.0.0</enforcer-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -42,68 +58,182 @@
             <dependency>
                 <groupId>care.better.abac</groupId>
                 <artifactId>better-abac-integration</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.8-SNAPSHOT</version>
             </dependency>
+
             <dependency>
                 <groupId>care.better.abac</groupId>
                 <artifactId>better-abac-plugin</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.8-SNAPSHOT</version>
             </dependency>
+
+            <dependency>
+                <groupId>care.better.abac</groupId>
+                <artifactId>better-abac-server</artifactId>
+                <version>1.0.8-SNAPSHOT</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.pf4j</groupId>
                 <artifactId>pf4j</artifactId>
                 <version>${pf4j.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.querydsl</groupId>
                 <artifactId>querydsl-apt</artifactId>
                 <version>${querydsl.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-configuration2</artifactId>
                 <version>${commons-configuration.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${antlr.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>net.javacrumbs.shedlock</groupId>
                 <artifactId>shedlock-spring</artifactId>
                 <version>${shedlock.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>net.javacrumbs.shedlock</groupId>
                 <artifactId>shedlock-provider-jdbc-template</artifactId>
                 <version>${shedlock.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>care.better.schema</groupId>
+                <artifactId>db-schema</artifactId>
+                <version>${db-schema.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>oracle</groupId>
                 <artifactId>ojdbc6</artifactId>
                 <version>${oracle.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.querydsl</groupId>
                 <artifactId>querydsl-apt</artifactId>
                 <version>${querydsl.version}</version>
                 <classifier>jpa</classifier>
+            </dependency>
+
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-client</artifactId>
+                <version>${hapi-fhir.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-structures-r4</artifactId>
+                <version>${hapi-fhir.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.security.oauth.boot</groupId>
+                <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+                <version>${oauth2-autoconfiugere.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus-jose.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.common</groupId>
+                <artifactId>wildfly-common</artifactId>
+                <version>${wildfly-common.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>${json-smart.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${findbugs.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.el</groupId>
+                <artifactId>javax.el-api</artifactId>
+                <version>${javax-el.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging-annotations</artifactId>
+                <version>${logging-jboss.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging-processor</artifactId>
+                <version>${logging-jboss.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>${osgi-compendium.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${osgi-core.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -118,18 +248,27 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -153,7 +292,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin.version}</version>
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
@@ -169,6 +307,26 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
+
+            <!-- Should fail only for ca.uhn.hapi.fhir:hapi-fhir-base. Must remove comment when old demographics plugin will be removed (May 2022). -->
+            <!-- <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <configuration>
+                            <rules>
+                                <dependencyConvergence />
+                            </rules>
+                        </configuration>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin> -->
         </plugins>
     </build>
 </project>

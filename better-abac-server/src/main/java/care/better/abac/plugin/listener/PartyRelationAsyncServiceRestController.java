@@ -1,8 +1,10 @@
 package care.better.abac.plugin.listener;
 
+import care.better.abac.plugin.PartyRelationChange;
 import care.better.abac.plugin.PartyRelationSynchronizer;
 import care.better.abac.plugin.spi.AsyncPartyRelationService;
 import care.better.core.Opt;
+import care.better.core.function.FunctionWithThrowable;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,15 +16,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static care.better.abac.plugin.listener.PartyRelationAsyncServiceRestController.STATIC_PATH;
 
 /**
  * @author Andrej Dolenc
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 @RestController
 @RequestMapping(value = STATIC_PATH, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 public class PartyRelationAsyncServiceRestController {
@@ -46,9 +47,9 @@ public class PartyRelationAsyncServiceRestController {
             @PathVariable("listenerId") String listenerId,
             @RequestBody Object eventData) {
         Opt.resolve(() -> services.get(serviceId))
-                .flatMap(service -> Opt.from(service.getListeners().stream()
-                                                     .filter(listener -> listener.getId().equals(listenerId))
-                                                     .findFirst()).map(listener -> listener.processEvent(eventData)))
+                .flatMap((FunctionWithThrowable<AsyncPartyRelationService<?>, Opt<Set<PartyRelationChange>>, RuntimeException>)service ->
+                        Opt.from(service.getListeners().stream().filter(listener -> listener.getId().equals(listenerId)).findFirst())
+                                .map(listener -> listener.processEvent(eventData)))
                 .ifPresent(partyRelationSynchronizer::sync)
                 .orElseThrow(() -> new IllegalStateException(
                         String.format("No service configured for listener %s and service %s , rejecting message!", listenerId, serviceId)));

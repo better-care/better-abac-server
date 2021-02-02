@@ -5,6 +5,7 @@ import care.better.abac.plugin.PluginManager.Key;
 import care.better.abac.plugin.SynchronizationPhase;
 import care.better.abac.plugin.SynchronizationTaskRunner;
 import care.better.abac.plugin.condition.ConditionalOnServiceType;
+import care.better.abac.plugin.config.PluginConfiguration;
 import care.better.abac.plugin.shedlock.RunnableWithLockConfiguration;
 import care.better.abac.plugin.shedlock.ShedlockConfiguration;
 import care.better.abac.plugin.spi.SynchronizingPartyRelationService;
@@ -12,6 +13,7 @@ import lombok.NonNull;
 import net.javacrumbs.shedlock.core.LockConfiguration;
 import net.javacrumbs.shedlock.spring.LockableTaskScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -25,6 +27,7 @@ import java.util.Map;
 @Configuration
 @ConditionalOnServiceType(SynchronizingPartyRelationService.class)
 @Import(ShedlockConfiguration.class)
+@AutoConfigureAfter(PluginConfiguration.class)
 public class SynchronizingServiceAutoConfiguration {
     private static final long SYNC_INTERVAL_MS = 10000L;
 

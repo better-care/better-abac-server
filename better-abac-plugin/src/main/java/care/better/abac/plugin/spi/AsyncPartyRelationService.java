@@ -5,7 +5,6 @@ import care.better.abac.plugin.PartyRelationChange;
 import care.better.abac.plugin.listener.Listener;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**

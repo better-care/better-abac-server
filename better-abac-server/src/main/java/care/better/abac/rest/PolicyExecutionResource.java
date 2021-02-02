@@ -1,9 +1,11 @@
 package care.better.abac.rest;
 
+import care.better.abac.oauth.SsoConfiguration;
 import care.better.abac.policy.execute.evaluation.BooleanEvaluationExpression;
 import care.better.abac.policy.execute.evaluation.EvaluationContext;
 import care.better.abac.policy.execute.evaluation.EvaluationExpression;
 import care.better.abac.policy.service.PolicyService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+import static care.better.abac.policy.execute.PolicyHelper.OAUTH2_TOKEN_ATTRIBUTE_EXTRACTOR;
+
 /**
  * @author Bostjan Lah
  */
@@ -39,8 +43,11 @@ public class PolicyExecutionResource {
     @Autowired
     private PolicyService pdlPolicyService;
 
+    @Autowired(required = false)
+    private SsoConfiguration sso;
+
     @RequestMapping(value = "/execute/name/{name}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
-                    consumes = MediaType.APPLICATION_JSON_VALUE)
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> executeByNameSimple(@PathVariable("name") String name, @RequestBody Map<String, Object> ctx) {
         log.debug("Executing policy {} with simple boolean result, ctx={}", name, ctx);
         EvaluationExpression expression = evaluate(name, createContext(ctx));
@@ -60,7 +67,7 @@ public class PolicyExecutionResource {
     }
 
     @RequestMapping(value = "/execute/name/{name}/expression", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
-                    consumes = MediaType.APPLICATION_JSON_VALUE)
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     public EvaluationExpression executeByNameComplex(@PathVariable("name") String name, @RequestBody Map<String, Object> ctx) {
         log.debug("Executing policy {} with expression result, ctx={}", name, ctx);
         return evaluate(name, createContext(ctx));
@@ -69,8 +76,20 @@ public class PolicyExecutionResource {
     private EvaluationContext createContext(Map<String, Object> ctx) {
         EvaluationContext context = new EvaluationContext(ctx);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken) && !context.isQueryValue(EvaluationContext.USER_KEY)) {
-            context.setContextValue(EvaluationContext.USER_KEY, authentication.getName());
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            if (!context.isQueryValue(EvaluationContext.USER_KEY)) {
+                context.setContextValue(EvaluationContext.USER_KEY, authentication.getName());
+            }
+            if (sso != null) {
+                sso.getAbacContextMapping().stream()
+                        .filter(am -> !context.isQueryValue(am.getContextKey()))
+                        .forEach(am -> {
+                            String attributeValue = OAUTH2_TOKEN_ATTRIBUTE_EXTRACTOR.apply(authentication, am.getTokenAttributePath());
+                            if (StringUtils.isNotBlank(attributeValue)) {
+                                context.setContextValue(am.getContextKey(), attributeValue);
+                            }
+                        });
+            }
         }
         return context;
     }

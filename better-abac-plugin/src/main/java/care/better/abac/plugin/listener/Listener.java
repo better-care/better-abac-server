@@ -7,8 +7,8 @@ import java.util.Set;
 /**
  * @author Andrej Dolenc
  */
-public interface Listener<E> {
+public interface Listener {
     String getId();
 
-    Set<PartyRelationChange> processEvent(E event);
+    Set<PartyRelationChange> processEvent(Object event);
 }

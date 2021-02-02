@@ -4,9 +4,12 @@ import com.google.common.base.Preconditions;
 import care.better.abac.exception.PolicyExecutionException;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -15,7 +18,10 @@ import java.util.stream.Collectors;
  */
 
 public class PolicyHelper {
-
+    public final static BiFunction<Authentication, String, String> OAUTH2_TOKEN_ATTRIBUTE_EXTRACTOR =
+            (Authentication auth, String attrPath) -> auth.getPrincipal() instanceof OAuth2AuthenticatedPrincipal
+                    ? (String)((OAuth2AuthenticatedPrincipal)auth.getPrincipal()).getAttributes().get(attrPath)
+                    : null;
     private final Map<String, ExecutableFunction> executableFunctions;
     private final Map<String, ExecutableConversion> executableConversions;
 

@@ -15,6 +15,7 @@ import org.pf4j.ManifestPluginDescriptorFinder;
 import org.pf4j.PluginDescriptorFinder;
 import org.pf4j.PluginState;
 import org.pf4j.PropertiesPluginDescriptorFinder;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -84,7 +85,16 @@ public class PluginManager extends DefaultPluginManager {
                                  properties.load(Files.newBufferedReader(propertyPath));
                              } catch (IOException ignored) {
                              }
+                         } else {
+                             ClassPathResource propertiesResource = new ClassPathResource(p.getDescriptor().getPluginId() + ".properties");
+                             if (propertiesResource.exists()) {
+                                 try {
+                                     properties.load(propertiesResource.getInputStream());
+                                 } catch (IOException ignored) {
+                                 }
+                             }
                          }
+
                          List<Service> extensions = getExtensions(Service.class, p.getPluginId());
                          return extensions.stream()
                                  .map(e -> Pair.of(Key.of(p.getPluginId(), e.getId()), Descriptor.of(e, properties)))

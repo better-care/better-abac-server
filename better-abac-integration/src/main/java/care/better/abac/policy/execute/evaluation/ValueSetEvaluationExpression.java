@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Conditions that requires that resource contains any of specified values inside resource path. Empty set means, that a path exists with any value.
+ * Conditions that requires that resource contains any of specified values inside resource path. Empty set means that a path exists with any value.
  *
  * @author Andrej Dolenc
  */

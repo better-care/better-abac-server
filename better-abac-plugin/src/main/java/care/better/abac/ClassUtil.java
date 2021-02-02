@@ -9,6 +9,7 @@ public final class ClassUtil {
     private ClassUtil() {
     }
 
+    @SuppressWarnings("unchecked")
     public static <C> C create (@NonNull String className, @NonNull ClassLoader classLoader)
     {
         try {

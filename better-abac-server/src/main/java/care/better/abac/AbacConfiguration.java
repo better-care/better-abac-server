@@ -1,5 +1,6 @@
 package care.better.abac;
 
+import care.better.abac.db.DbSchemaInitializerConfiguration;
 import care.better.abac.dto.config.ExternalPolicyMapper;
 import care.better.abac.dto.config.ExternalSystemMapper;
 import care.better.abac.external.ExternalSystemSchedulerConfiguration;
@@ -51,7 +52,8 @@ import java.util.List;
                 PolicyConfiguration.class,
                 OAuth2Configuration.class,
                 OAuth2ClientConfiguration.class,
-                ExternalSystemSchedulerConfiguration.class})
+                ExternalSystemSchedulerConfiguration.class,
+                DbSchemaInitializerConfiguration.class})
 public class AbacConfiguration {
     private static final Logger log = LogManager.getLogger(AbacConfiguration.class.getName());
 
