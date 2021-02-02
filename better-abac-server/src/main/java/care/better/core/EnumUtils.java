@@ -1,4 +1,4 @@
-package com.marand.core;
+package care.better.core;
 
 import lombok.NonNull;
 

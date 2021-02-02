@@ -11,7 +11,7 @@ conversion: conversionName conversionArguments;
 
 operation: quantifier operations | function | conversion;
 
-conversionArguments: '(' ((function | conversion) (',' argument)*) ')';
+conversionArguments: '(' ((function | conversion | operation) (',' argument)*) ')';
 
 arguments: '(' (argument (',' argument)*)* ')';
 

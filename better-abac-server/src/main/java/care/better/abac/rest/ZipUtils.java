@@ -1,6 +1,7 @@
 package care.better.abac.rest;
 
 import lombok.NonNull;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +25,7 @@ public final class ZipUtils {
         ZipEntry zipEntry = stream.getNextEntry();
         if (zipEntry != null) {
             String name = zipEntry.getName();
-            String value = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            String value = new String(StreamUtils.copyToByteArray(stream), StandardCharsets.UTF_8);
             return mapper.map(name, value);
         } else {
             return null;

@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizationContext;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType;
 
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class OAuth2ClientConfiguration {
     private ClientAuthConfiguration clientAuthConfiguration;
 
     @Bean
-    public OAuth2AuthorizedClientProvider oAuth2AuthorizedClientProvider(
+    public AuthorizedClientServiceOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager(
             @NonNull ClientRegistrationRepository clientRegistrationRepository,
             @NonNull OAuth2AuthorizedClientService oAuth2AuthorizedClientService) {
         OAuth2AuthorizedClientProvider authorizedClientProvider =
@@ -42,20 +42,18 @@ public class OAuth2ClientConfiguration {
         AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager = new AuthorizedClientServiceOAuth2AuthorizedClientManager(
                 clientRegistrationRepository, oAuth2AuthorizedClientService);
         authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
-        return authorizedClientProvider;
+        authorizedClientManager.setContextAttributesMapper(OAuth2AuthorizeRequest::getAttributes);
+        return authorizedClientManager;
     }
 
     @Bean
-    public AuthorizationProvider authorizationProvider(
-            @NonNull ClientRegistrationRepository clientRegistrationRepository,
-            @NonNull OAuth2AuthorizedClientProvider provider) {
-        OAuth2AuthorizationContext context = OAuth2AuthorizationContext.withClientRegistration(clientRegistrationRepository.findByRegistrationId(
-                clientAuthConfiguration.getType()))
+    public AuthorizationProvider authorizationProvider(@NonNull AuthorizedClientServiceOAuth2AuthorizedClientManager manager) {
+        OAuth2AuthorizeRequest request = OAuth2AuthorizeRequest.withClientRegistrationId(clientAuthConfiguration.getType())
                 .principal(new AnonymousAuthenticationToken())
                 .attribute(OAuth2AuthorizationContext.USERNAME_ATTRIBUTE_NAME, clientAuthConfiguration.getUsername())
                 .attribute(OAuth2AuthorizationContext.PASSWORD_ATTRIBUTE_NAME, clientAuthConfiguration.getPassword())
                 .build();
-        return () -> Optional.ofNullable(provider.authorize(context))
+        return () -> Optional.ofNullable(manager.authorize(request))
                 .map(p -> TokenType.BEARER.getValue() + ' ' + p.getAccessToken().getTokenValue())
                 .orElse(null);
     }
@@ -72,7 +70,7 @@ public class OAuth2ClientConfiguration {
 
         @Override
         public Object getPrincipal() {
-            return "anonymous";
+            return "abac";
         }
     }
 }

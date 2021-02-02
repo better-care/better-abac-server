@@ -25,7 +25,7 @@ public class Relation {
     }
 
     public Relation(@NonNull String name, boolean inverse) {
-        Preconditions.checkArgument(!name.isBlank(), "Relation name is blank!");
+        Preconditions.checkArgument(!StringUtils.isBlank(name), "Relation name is blank!");
         this.name = name;
         this.inverse = inverse;
     }

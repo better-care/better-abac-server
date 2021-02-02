@@ -60,16 +60,22 @@ public final class ConvertingPolicyVisitor extends PolicyBaseVisitor<PolicyRule>
     public PolicyRule visitConversion(ConversionContext ctx) {
         ConversionArgumentsContext conversionArguments = ctx.conversionArguments();
         FunctionContext functionContext = conversionArguments.function();
+        OperationContext operationContext = conversionArguments.operation();
         ConversionContext conversionContext = conversionArguments.conversion();
         String conversionName = ctx.conversionName().getText();
         PolicyFunctionParameter[] conversionParameters = extractArguments(conversionArguments.argument());
-        if (functionContext != null) {
+        if (operationContext != null)
+        {
+            PolicyRule operation = visitOperation(operationContext);
+            return new DecisionConversion(conversionName, operation, conversionParameters);
+        }
+        else if (functionContext != null) {
             PolicyRule function = visitFunction(functionContext);
             return new DecisionConversion(conversionName, function, conversionParameters);
         } else if (conversionContext != null) {
             return new DecisionConversion(conversionName, visitConversion(conversionContext), conversionParameters);
         } else {
-            throw new PolicyExecutionException("Expected function or conversion, got none!");
+            throw new PolicyExecutionException("Expected function, conversion or operation, got none!");
         }
     }
 

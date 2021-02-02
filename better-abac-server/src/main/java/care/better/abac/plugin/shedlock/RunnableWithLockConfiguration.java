@@ -1,4 +1,4 @@
-package care.better.abac.plugin.sync;
+package care.better.abac.plugin.shedlock;
 
 import net.javacrumbs.shedlock.core.LockConfiguration;
 

@@ -34,6 +34,7 @@ import org.springframework.util.MultiValueMap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -72,10 +73,12 @@ public class PolicyResourceTest {
     public void testPolicyExport() throws IOException {
         ResponseEntity<ByteArrayResource> resource = restTemplate.getForEntity(BASE_URL + "/export", ByteArrayResource.class);
         try (ZipInputStream zipInputStream = new ZipInputStream(resource.getBody().getInputStream())) {
-            Set<PolicyDto> policies = Stream.iterate(0, i -> i + 1)
-                    .map(i -> readPolicyFromZip(zipInputStream))
-                    .takeWhile(Objects::nonNull)
-                    .collect(Collectors.toSet());
+            Set<PolicyDto> policies = new HashSet<>();
+            PolicyDto policy;
+            //noinspection NestedAssignment
+            while ((policy = readPolicyFromZip(zipInputStream)) != null) {
+                policies.add(policy);
+            }
             assertThat(policies).extracting(PolicyDto::getName).containsExactlyInAnyOrder("TEST_POLICY_1", "TEST_POLICY_2", "TEST_POLICY_3");
             assertThat(policies).extracting(PolicyDto::getPolicy).containsExactlyInAnyOrder("hasRelation(ctx.user, 'RELATION_1', ctx.patient)",
                                                                                             "hasRelation(ctx.user, 'RELATION_2', ctx.patient)",

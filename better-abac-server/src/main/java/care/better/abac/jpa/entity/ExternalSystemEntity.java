@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -19,7 +20,7 @@ import java.util.Set;
 /**
  * @author Matic Ribic
  */
-@Table(name = "external_system")
+@Table(name = "external_system", uniqueConstraints = @UniqueConstraint(columnNames = "externalId"))
 @Entity
 public class ExternalSystemEntity {
     @Id

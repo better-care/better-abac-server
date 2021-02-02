@@ -1,4 +1,4 @@
-package care.better.abac.plugin.sync;
+package care.better.abac.plugin;
 
 import care.better.abac.dto.PartyRelationDto;
 import care.better.abac.exception.PartyRelationInvalidTypesException;
@@ -7,9 +7,7 @@ import care.better.abac.jpa.entity.PartyType;
 import care.better.abac.jpa.repo.PartyRelationRepository;
 import care.better.abac.jpa.repo.PartyRepository;
 import care.better.abac.jpa.repo.RelationTypeRepository;
-import care.better.abac.plugin.ChangeType;
-import care.better.abac.plugin.PartyChangeMapper;
-import care.better.abac.plugin.PartyRelationChange;
+import care.better.abac.plugin.spi.AsyncPartyRelationService;
 import care.better.abac.plugin.spi.SynchronizingPartyRelationService;
 import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
@@ -52,12 +50,26 @@ public class PartyRelationSynchronizer {
     }
 
     @Transactional
+    public void syncInitial(@NonNull AsyncPartyRelationService<?> service) {
+        service.providesFor()
+                .forEach(rt -> partyRelationRepository.deleteByPartyAndRelationType(null, null, rt.getName()));
+        service.syncInitial().stream()
+                .filter(r -> ChangeType.INSERT == r.getChangeType())
+                .forEach(c -> partyRelationRepository.save(create(c)));
+    }
+
+    @Transactional
     public void sync(
             @NonNull SynchronizingPartyRelationService service,
             @NonNull Instant from,
             @NonNull Instant to) {
         Set<PartyRelationChange> relations = service.sync(from, to);
         log.debug("Got changes {}", relations);
+        sync(relations);
+    }
+
+    @Transactional
+    public void sync(Set<PartyRelationChange> relations) {
         relations.stream()
                 .filter(r -> ChangeType.DELETE == r.getChangeType())
                 .forEach(r -> partyRelationRepository.deleteByPartyAndRelationType(

@@ -22,15 +22,15 @@ public class DecisionConversion implements PolicyRule {
     private final PolicyFunctionParameter[] parameters;
 
     @Getter
-    private final PolicyRule function;
+    private final PolicyRule rule;
 
     @JsonCreator
     public DecisionConversion(
             @NonNull @JsonProperty("conversionName") String conversionName,
-            @NonNull @JsonProperty("function") PolicyRule function,
+            @NonNull @JsonProperty("rule") PolicyRule rule,
             @NonNull @JsonProperty("parameters") PolicyFunctionParameter[] parameters) {
         this.conversionName = conversionName;
-        this.function = function;
+        this.rule = rule;
         this.parameters = parameters.clone();
     }
 
@@ -38,7 +38,7 @@ public class DecisionConversion implements PolicyRule {
     public EvaluationExpression evaluate(@NonNull PolicyExecutionContext policyExecutionContext) {
         try {
             ExecutableConversion conversion = policyExecutionContext.getPolicyHelper().findExecutableConversion(conversionName);
-            return conversion.convert(policyExecutionContext, function.evaluate(policyExecutionContext), parameters);
+            return conversion.convert(policyExecutionContext, rule.evaluate(policyExecutionContext), parameters);
         } catch (PolicyExecutionException e) {
             String message = "Unable to convert: '" + conversionName + "'! [" + e.getMessage() + ']';
             policyExecutionContext.getExecutionLog().add(new ExecutionErrorAuditEntry(message));
@@ -50,7 +50,7 @@ public class DecisionConversion implements PolicyRule {
     public EvaluationExpression query(@NonNull PolicyExecutionContext policyExecutionContext) {
         try {
             ExecutableConversion conversion = policyExecutionContext.getPolicyHelper().findExecutableConversion(conversionName);
-            return conversion.convert(policyExecutionContext, function.query(policyExecutionContext), parameters);
+            return conversion.convert(policyExecutionContext, rule.query(policyExecutionContext), parameters);
         } catch (PolicyExecutionException e) {
             String message = "Unable to convert: '" + conversionName + "'! [" + e.getMessage() + ']';
             policyExecutionContext.getExecutionLog().add(new ExecutionErrorAuditEntry(message));

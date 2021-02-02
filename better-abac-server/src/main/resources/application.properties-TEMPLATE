@@ -11,6 +11,7 @@ spring.jackson.serialization.write_dates_as_timestamps=false
 
 spring.cache.infinispan.config=infinispan.xml
 spring.cache.cache-names=patients,users
+spring.task.scheduling.pool.size=20
 
 partyinfo.services[0].type=USER
 partyinfo.services[0].impl=keycloak
@@ -34,3 +35,6 @@ spring.security.oauth2.client.registration.oauth2.client-id=abac
 spring.security.oauth2.client.provider.oauth2.token-uri=https://localhost/auth/realms/abac/protocol/openid-connect/token
 client.auth.username=username
 client.auth.password=password
+
+# Async service
+async.rest.base-callback-url=http://localhost:8080/

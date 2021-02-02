@@ -1,7 +1,5 @@
 package care.better.abac.rest;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import care.better.abac.AbacConfiguration;
 import care.better.abac.dto.PartyDto;
 import care.better.abac.dto.PartyRelationDto;
@@ -16,7 +14,10 @@ import care.better.abac.policy.execute.evaluation.EvaluationExpression;
 import care.better.abac.policy.execute.evaluation.ResultSetEvaluationExpression;
 import care.better.abac.policy.execute.evaluation.Tag;
 import care.better.abac.policy.execute.evaluation.TagSetEvaluationExpression;
+import care.better.abac.policy.execute.evaluation.ValueSetEvaluationExpression;
 import care.better.abac.rest.PolicyExecutionResourceTest.Config;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,7 +86,50 @@ public class PolicyExecutionResourceTest {
         assertThat(toResultSet(allOf.getLeftChild())).isEqualTo(Sets.newHashSet("user", "user1", "user2"));
         assertThat(toTagSet(allOf.getRightChild())).isEqualTo(Collections.singleton(new Tag("TAG")));
         assertThat(noneOf.getBooleanOperation()).isEqualTo(BooleanOperation.NOT);
-        assertThat(toTagSet(noneOf.getLeftChild())).isEqualTo(Collections.singleton(new Tag("TAG2::value")));
+        assertThat(toTagSet(noneOf.getRightChild())).isEqualTo(Collections.singleton(new Tag("TAG2::value")));
+    }
+
+    @Test
+    public void executeHasContextVar() {
+        String policyName = "HAS_CONTEXT_VAR_POLICY_TEST";
+        Policy policy = new Policy();
+        policy.setName(policyName);
+        policy.setPolicy("hasContextVar(ctx.user, 'user1', 'user2'))");
+        policyRepository.save(policy);
+
+        assertThat(executeSimple(policyName, ImmutableMap.of("user", "user2"))).isEqualTo(HttpStatus.OK);
+        assertThat(executeSimple(policyName, ImmutableMap.of("user", "user3"))).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void executeHasAnyContextVar() {
+        String policyName = "HAS_ANY_CONTEXT_VAR_POLICY_TEST";
+        Policy policy = new Policy();
+        policy.setName(policyName);
+        policy.setPolicy("hasContextVar(ctx.patient)");
+        policyRepository.save(policy);
+
+        assertThat(executeSimple(policyName, ImmutableMap.of("patient", "patient1"))).isEqualTo(HttpStatus.OK);
+        assertThat(executeSimple(policyName, ImmutableMap.of("user", "user1"))).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void executeHasAnyValuePolicy() {
+        String policyName = "HAS_ANY_VALUE_TEST";
+        Policy policy = new Policy();
+        policy.setName(policyName);
+        policy.setPolicy("ALL_OF(hasAnyValue('path', 'value1', 'value2'), hasAnyValue('path', 'value2', 'value3'), hasRelation(ctx.user, 'OWNS', ctx.patient)");
+        policyRepository.save(policy);
+
+        assertThat(HttpStatus.CONFLICT == executeSimple(policyName, ImmutableMap.of("user", "?", "patient", "patient1")));
+
+        BooleanOperationEvaluationExpression expression = (BooleanOperationEvaluationExpression)executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient1"));
+        assertThat(expression.getBooleanOperation()).isEqualTo(BooleanOperation.AND);
+        ValueSetEvaluationExpression valueSet = (ValueSetEvaluationExpression)expression.getLeftChild();
+        ResultSetEvaluationExpression resultSet = (ResultSetEvaluationExpression)expression.getRightChild();
+        assertThat(valueSet.getPath()).isEqualTo("path");
+        assertThat(valueSet.getValues()).isEqualTo(Sets.newHashSet("value2"));
+        assertThat(resultSet.getExternalIds()).isEqualTo(Sets.newHashSet("user", "user1", "user2"));
     }
 
     @Test
@@ -203,7 +247,7 @@ public class PolicyExecutionResourceTest {
 
     @Test
     public void executeMatchRelationsTagConversionPolicy() {
-        String policyName = "MATCH_RELATIONS_CONVERSION_TEST";
+        String policyName = "MATCH_RELATIONS_TAG_CONVERSION_TEST";
         Policy policy = new Policy();
         policy.setName(policyName);
         policy.setPolicy("prefix(asTags(matchRelations(ctx.user, 'USES', ctx.patient, 'USES'),'CARE_PLAN'),'CarePlan/')");
@@ -220,6 +264,26 @@ public class PolicyExecutionResourceTest {
         assertThat(toTagSet(executeComplex(policyName, ImmutableMap.of("user", "user1", "patient", "?")))).isEmpty();
         assertThat(toTagSet(executeComplex(policyName, ImmutableMap.of("user", "user2", "patient", "?")))).isEqualTo(Sets.newHashSet(new Tag(
                 "CARE_PLAN::CarePlan/patient2")));
+    }
+
+    @Test
+    public void executeMatchRelationsValueSetConversionPolicy() {
+        String policyName = "MATCH_RELATIONS_VALUE_CONVERSION_TEST";
+        String path = "content[openEHR-EHR-ACTION.care_plan.v0]/protocol[at0015]/items[at0016]/value/id";
+        Policy policy = new Policy();
+        policy.setName(policyName);
+        policy.setPolicy("prefix(asValueSet(matchRelations(ctx.user, 'USES', ctx.patient, 'USES'),'" + path + "'),'CarePlan/')");
+        policyRepository.save(policy);
+
+        assertThat(executeSimple(policyName, ImmutableMap.of("user", "user2", "patient", "patient2"))).isEqualTo(HttpStatus.OK);
+
+        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient")), path)).isEmpty();
+        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient1")), path)).isEmpty();
+        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient2")), path)).isEqualTo(Sets.newHashSet("CarePlan/user2"));
+
+        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user", "patient", "?")), path)).isEmpty();
+        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user1", "patient", "?")), path)).isEmpty();
+        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user2", "patient", "?")), path)).isEqualTo(Sets.newHashSet("CarePlan/patient2"));
     }
 
     @Test
@@ -289,6 +353,16 @@ public class PolicyExecutionResourceTest {
             return value ? null : Collections.emptySet();
         }
         return ((TagSetEvaluationExpression)expression).getTags();
+    }
+
+    private Set<String> toValueSet(EvaluationExpression expression, String path) {
+        if (expression instanceof BooleanEvaluationExpression) {
+            boolean value = ((BooleanEvaluationExpression)expression).getBooleanValue();
+            return value ? null : Collections.emptySet();
+        }
+        return ((ValueSetEvaluationExpression)expression).getPath().equals(path)
+                ? ((ValueSetEvaluationExpression)expression).getValues()
+                : Collections.emptySet();
     }
 
     @TestConfiguration

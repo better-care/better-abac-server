@@ -1,13 +1,16 @@
 package care.better.abac.plugin.config;
 
+import care.better.abac.jpa.repo.PartyRelationRepository;
 import care.better.abac.jpa.repo.PartyRepository;
 import care.better.abac.jpa.repo.PartyTypeRepository;
 import care.better.abac.jpa.repo.PluginStateRepository;
 import care.better.abac.jpa.repo.RelationTypeRepository;
 import care.better.abac.plugin.PartyChangeMapper;
 import care.better.abac.plugin.PartyRelationServiceInitializer;
+import care.better.abac.plugin.PartyRelationSynchronizer;
 import care.better.abac.plugin.PluginManager;
 import care.better.abac.plugin.PluginStateManager;
+import care.better.abac.plugin.SynchronizationTaskRunner;
 import care.better.abac.plugin.auth.AuthorizationProvider;
 import care.better.abac.plugin.listener.ListenerServiceAutoConfiguration;
 import care.better.abac.plugin.sync.SynchronizingServiceAutoConfiguration;
@@ -49,5 +52,22 @@ public class PluginConfiguration {
     @Bean
     public PartyChangeMapper partyChangeMapper(@NonNull PartyRepository partyRepository, @NonNull PartyTypeRepository partyTypeRepository) {
         return new PartyChangeMapper(partyRepository, partyTypeRepository);
+    }
+
+    @Bean
+    public PartyRelationSynchronizer partyRelationSynchronizer(
+            @NonNull PartyRelationRepository partyRelationRepository,
+            @NonNull PartyRepository partyRepository,
+            @NonNull RelationTypeRepository relationTypeRepository,
+            @NonNull PartyChangeMapper partyChangeMapper) {
+        return new PartyRelationSynchronizer(partyRelationRepository, partyRepository, relationTypeRepository, partyChangeMapper);
+    }
+
+    @Bean
+    public SynchronizationTaskRunner synchronizationTaskRunner(
+            @NonNull PluginStateManager stateManager,
+            @NonNull PartyRelationSynchronizer synchronizer,
+            @NonNull PartyRelationServiceInitializer initializer) {
+        return new SynchronizationTaskRunner(stateManager, synchronizer, initializer);
     }
 }

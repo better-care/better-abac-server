@@ -1,4 +1,4 @@
-package com.marand.core.function;
+package care.better.core.function;
 
 /**
  * @author Rok Lenarcic

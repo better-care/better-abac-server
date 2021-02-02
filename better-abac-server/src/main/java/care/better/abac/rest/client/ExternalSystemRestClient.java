@@ -1,11 +1,11 @@
 package care.better.abac.rest.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import care.better.abac.dto.config.AbstractExternalSystemDto;
 import care.better.abac.dto.config.ExternalSystemEventType;
 import care.better.abac.dto.config.ValidationErrorDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpEntity;
@@ -17,13 +17,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Matic Ribič
@@ -59,7 +59,7 @@ public class ExternalSystemRestClient {
                          response.getStatusCode());
                 return false;
             }
-        } catch (RestClientException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
             log.warn("Notification failed with error: {}", e.getMessage(), e);
             return false;
         }
@@ -70,18 +70,23 @@ public class ExternalSystemRestClient {
         Objects.requireNonNull(clientConfigInputDto.getAbacRestBaseUrl(), "System ABAC REST base URL");
         String serverBaseRestUrl = getServerBaseRestUrl(clientConfigInputDto.getAbacRestBaseUrl());
 
+        Optional<List<ValidationErrorDto>> errorsOptional = Optional.empty();
         try {
             ResponseEntity<String> response = restTemplate.exchange(serverBaseRestUrl + "/config/validate",
                                                                     HttpMethod.POST,
                                                                     new HttpEntity<>(clientConfigInputDto, createHeaders()),
                                                                     String.class);
             if (!response.getStatusCode().is2xxSuccessful()) {
-                throw ValidationException.of(response.getBody() != null ? readErrors(response.getBody()) : Collections.emptyList());
+                errorsOptional = Optional.of(response.getBody() != null ? readErrors(response.getBody()) : Collections.emptyList());
             }
-        } catch (RestClientException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
             log.warn("Validation failed with error: {}", e.getMessage(), e);
             //noinspection ThrowInsideCatchBlockWhichIgnoresCaughtException
             throw ValidationException.of(Collections.singletonList(new ValidationErrorDto(null, e.getMessage())));
+        }
+
+        if (errorsOptional.isPresent()) {
+            throw ValidationException.of(errorsOptional.get());
         }
     }
 

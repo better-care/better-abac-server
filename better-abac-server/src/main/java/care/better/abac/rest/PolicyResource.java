@@ -1,6 +1,6 @@
 package care.better.abac.rest;
 
-import com.marand.core.Opt;
+import care.better.core.Opt;
 import care.better.abac.dto.PolicyDto;
 import care.better.abac.jpa.entity.Policy;
 import care.better.abac.jpa.repo.PolicyRepository;
@@ -128,11 +128,12 @@ public class PolicyResource {
     public ResponseEntity<Void> importPolicies(@RequestParam(value = "file") MultipartFile file, HttpServletRequest request) throws IOException {
         Set<String> synchronizations = new HashSet<>();
         try (ZipInputStream zipInputStream = new ZipInputStream(file.getInputStream())) {
-            Stream.iterate(0, i -> i + 1)
-                    .map(i -> readPolicyFromZip(zipInputStream))
-                    .takeWhile(Objects::nonNull)
-                    .peek(policy -> synchronizations.add(policy.getName()))
-                    .forEach(policyRepository::save);
+            Policy policy;
+            //noinspection NestedAssignment
+            while ((policy = readPolicyFromZip(zipInputStream)) != null) {
+                synchronizations.add(policy.getName());
+                policyRepository.save(policy);
+            }
         }
         registerPolicySync(synchronizations, true);
         return ResponseEntity.noContent().build();

@@ -5,7 +5,9 @@ import care.better.abac.dto.config.ExternalPolicyDto;
 import care.better.abac.dto.config.ExternalPolicyType;
 import care.better.abac.dto.config.ExternalSystemInputDto;
 import care.better.abac.dto.config.ExternalSystemValidationStatus;
+import care.better.abac.external.ExternalSystemSchedulerConfiguration.ValidationTaskRunner;
 import care.better.abac.jpa.entity.ExternalSystemEntity;
+import care.better.abac.plugin.shedlock.ShedlockConfiguration;
 import care.better.abac.rest.PolicyExecutionResourceTest;
 import care.better.abac.rest.client.ValidationException;
 import org.junit.Before;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
@@ -31,13 +34,14 @@ import static org.assertj.core.api.Assertions.fail;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {AbacConfiguration.class, PolicyExecutionResourceTest.Config.class})
+@TestPropertySource(properties = "abac.configValidationEnabled=true")
 @EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
 @AutoConfigureTestDatabase
 @DirtiesContext
 public class ExternalSystemConfigurationSchedulerTest {
 
     @Inject
-    private ExternalSystemConfigurationScheduler externalSystemConfigurationScheduler;
+    private ValidationTaskRunner validationTaskRunner;
 
     @Inject
     private ExternalSystemService externalSystemService;
@@ -74,7 +78,7 @@ public class ExternalSystemConfigurationSchedulerTest {
         assertThat(externalSystemService.getConfigListToValidate()).hasSize(1);
 
         // when
-        externalSystemConfigurationScheduler.validate();
+        validationTaskRunner.validate();
 
         // then
         assertThat(externalSystemService.getConfigListToValidate()).isEmpty();

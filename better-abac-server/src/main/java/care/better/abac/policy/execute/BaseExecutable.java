@@ -62,7 +62,7 @@ public abstract class BaseExecutable {
         int parameterCount = functionMethod.getParameterCount();
         if (parameterCount < parameterValues.length) {
             parameterValues[parameterCount - 1] = Arrays.copyOfRange(parameterValues, parameterCount - 1, parameters.length);
-        } else if (parameterCount == parameterValues.length && functionMethod.getParameterTypes()[parameterCount - 1] == Object[].class) {
+        } else if (parameterCount == parameterValues.length && parameterCount > 0 && functionMethod.getParameterTypes()[parameterCount - 1] == Object[].class) {
             parameterValues[parameterCount - 1] = new Object[]{parameterValues[parameterCount - 1]};
         }
         return Arrays.copyOf(parameterValues, parameterCount);

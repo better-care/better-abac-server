@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration monitorInterval="30">
     <Appenders>
-        <RollingFile name="file" fileName="abac.log" filePattern="old-%d{yyyy-MM-dd-HH}-%i.log.gz">
+        <RollingRandomAccessFile name="file" fileName="abac.log" filePattern="abac-%i.log">
             <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
+            <DefaultRolloverStrategy max="5"/>
             <PatternLayout>
                 <Pattern>%d{ISO8601} %p %c{1}:%L - %m%n</Pattern>
             </PatternLayout>
-        </RollingFile>
+        </RollingRandomAccessFile>
 
         <Console name="stdout" target="SYSTEM_OUT">
             <PatternLayout>
@@ -17,11 +18,9 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="org.springframework" level="info"/>
-        <Logger name="org.hibernate" level="warn"/>
-
-        <Root level="debug">
-            <AppenderRef ref="stdout"/>
+        <Root level="info">
+            <AppenderRef ref="file"/>
+            <AppenderRef ref="console"/>
         </Root>
     </Loggers>
 </Configuration>

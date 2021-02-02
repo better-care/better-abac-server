@@ -1,10 +1,10 @@
-package com.marand.core;
+package care.better.core;
 
-import com.marand.core.function.BiFunctionWithThrowable;
-import com.marand.core.function.ConsumerWithThrowable;
-import com.marand.core.function.FunctionWithThrowable;
-import com.marand.core.function.RunnableWithThrowable;
-import com.marand.core.function.SupplierWithThrowable;
+import care.better.core.function.BiFunctionWithThrowable;
+import care.better.core.function.ConsumerWithThrowable;
+import care.better.core.function.FunctionWithThrowable;
+import care.better.core.function.RunnableWithThrowable;
+import care.better.core.function.SupplierWithThrowable;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 

@@ -35,17 +35,17 @@ public class HasRelationChainFunction extends ExecutableFunction {
 
     @Transactional(readOnly = true)
     @Executable(type = Type.EVALUATE)
-    public EvaluationExpression hasRelationChainEvaluate(String sourceId, Object targetIds, Object... relationNames) {
+    public EvaluationExpression hasRelationChainEvaluate(Object sourceIds, Object targetIds, Object... relationNames) {
         Collection<String> ids = convertIds(targetIds);
         return new BooleanEvaluationExpression(
-        !ids.isEmpty() && findBySourceAndTargetExternalIdsAndRelationChain(Collections.singleton(sourceId), ids, OffsetDateTime.now(),
+        !ids.isEmpty() && findBySourceAndTargetExternalIdsAndRelationChain(convertIds(sourceIds), ids, OffsetDateTime.now(),
                                                                            convertRelationChain(relationNames)));
     }
 
     @Transactional(readOnly = true)
     @Executable(type = Type.QUERY)
-    public EvaluationExpression hasRelationChainQuery(String sourceId, Object targetIds, Object... relationNames) {
-        return ResultSetEvaluationExpression.create(queryBySourceAndTargetExternalIdsAndRelationChain(Collections.singleton(sourceId), convertIds(targetIds), OffsetDateTime.now(),
+    public EvaluationExpression hasRelationChainQuery(Object sourceIds, Object targetIds, Object... relationNames) {
+        return ResultSetEvaluationExpression.create(queryBySourceAndTargetExternalIdsAndRelationChain(convertIds(sourceIds), convertIds(targetIds), OffsetDateTime.now(),
                                                           convertRelationChain(relationNames)));
     }
 

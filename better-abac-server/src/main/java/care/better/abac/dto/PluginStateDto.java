@@ -1,6 +1,5 @@
 package care.better.abac.dto;
 
-import care.better.abac.plugin.PluginManager;
 import care.better.abac.plugin.PluginManager.Key;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,6 +1,6 @@
 package care.better.abac.oauth;
 
-import com.marand.core.Opt;
+import care.better.core.Opt;
 import lombok.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

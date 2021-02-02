@@ -1,4 +1,4 @@
-package care.better.abac.plugin.sync.shedlock;
+package care.better.abac.plugin.shedlock;
 
 import lombok.Getter;
 import lombok.Setter;

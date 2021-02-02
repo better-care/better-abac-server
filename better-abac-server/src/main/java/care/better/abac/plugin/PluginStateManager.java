@@ -4,12 +4,11 @@ import care.better.abac.dto.PluginStateDto;
 import care.better.abac.jpa.entity.PluginState;
 import care.better.abac.jpa.repo.PluginStateRepository;
 import care.better.abac.plugin.PluginManager.Key;
+import care.better.core.Opt;
 import lombok.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Andrej Dolenc
@@ -43,22 +42,24 @@ public class PluginStateManager {
     }
 
     private PluginStateDto findOrCreatePluginState(Key key) {
-        return map(Optional.ofNullable(pluginRepository.findByPluginIdAndServiceId(key.getPluginId(), key.getServiceId())).orElseGet(() -> {
-            PluginState ps = new PluginState();
-            ps.setPluginId(key.getPluginId());
-            ps.setServiceId(key.getServiceId());
-            ps.setInitialized(false);
-            pluginRepository.save(ps);
-            return ps;
-        }));
+        return map(Optional.ofNullable(pluginRepository.findByPluginIdAndServiceId(key.getPluginId(), key.getServiceId()))
+                           .orElseGet(() -> create(key)));
+    }
+
+    private PluginState create(Key key) {
+        PluginState ps = new PluginState();
+        ps.setPluginId(key.getPluginId());
+        ps.setServiceId(key.getServiceId());
+        ps.setInitialized(false);
+        return ps;
     }
 
     private PluginStateDto map(PluginState ps) {
-        return new PluginStateDto(ps.getId(), ps.getPluginId(), ps.getServiceId(), ps.isInitialized(), ps.getSyncTime());
+        return new PluginStateDto(Opt.of(ps.getId()).orElse(null), ps.getPluginId(), ps.getServiceId(), ps.isInitialized(), ps.getSyncTime());
     }
 
     private PluginState save(PluginStateDto ps) {
-        PluginState state = pluginRepository.findByPluginIdAndServiceId(ps.getPluginId(), ps.getServiceId());
+        PluginState state = Optional.ofNullable(pluginRepository.findByPluginIdAndServiceId(ps.getPluginId(), ps.getServiceId())).orElse(create(ps.getKey()));
         state.setSyncTime(ps.getSyncTime());
         state.setInitialized(ps.isInitialized());
         return pluginRepository.save(state);

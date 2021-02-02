@@ -1,6 +1,6 @@
 package care.better.abac.plugin.condition;
 
-import com.marand.core.Opt;
+import care.better.core.Opt;
 import care.better.abac.plugin.PluginManager;
 import care.better.abac.plugin.PluginManager.Key;
 import care.better.abac.plugin.spi.Service;

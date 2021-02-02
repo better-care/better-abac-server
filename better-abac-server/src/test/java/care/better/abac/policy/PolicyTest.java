@@ -43,11 +43,11 @@ public class PolicyTest {
         assertThat(auditor.getAuditLog()).hasSize(4);
         assertThat(auditor.getAuditLog().get(0))
                 .hasFieldOrPropertyWithValue("functionName", "hasRelation")
-                .hasFieldOrPropertyWithValue("parameters", List.of(new Parameter(0, "ctx.user", "admin"), new Parameter(1, "const", "PERSONAL_PHYSICIAN"), new Parameter(2,"ctx.patient", "123")))
+                .hasFieldOrPropertyWithValue("parameters", Lists.newArrayList(new Parameter(0, "ctx.user", "admin"), new Parameter(1, "const", "PERSONAL_PHYSICIAN"), new Parameter(2,"ctx.patient", "123")))
                 .extracting("result").hasFieldOrPropertyWithValue("booleanValue", false);
         assertThat(auditor.getAuditLog().get(1))
                 .hasFieldOrPropertyWithValue("functionName", "hasRelation")
-                .hasFieldOrPropertyWithValue("parameters", List.of(new Parameter(0, "ctx.user", "admin"), new Parameter(1, "const", "PERSON_OF_TRUST"), new Parameter(2, "ctx.patient", "123")))
+                .hasFieldOrPropertyWithValue("parameters", Lists.newArrayList(new Parameter(0, "ctx.user", "admin"), new Parameter(1, "const", "PERSON_OF_TRUST"), new Parameter(2, "ctx.patient", "123")))
                 .extracting("result").hasFieldOrPropertyWithValue("booleanValue", false);
         assertThat(auditor.getAuditLog().get(3)).hasFieldOrPropertyWithValue("value", "DENY");
     }
@@ -61,11 +61,11 @@ public class PolicyTest {
         assertThat(auditor.getAuditLog()).hasSize(3);
         assertThat(auditor.getAuditLog().get(0))
                 .hasFieldOrPropertyWithValue("functionName", "hasRelation")
-                .hasFieldOrPropertyWithValue("parameters", List.of(new Parameter(0, "ctx.user", "admin"), new Parameter(1, "const", "PERSONAL_PHYSICIAN"), new Parameter(2, "ctx.patient", "123")))
+                .hasFieldOrPropertyWithValue("parameters", Lists.newArrayList(new Parameter(0, "ctx.user", "admin"), new Parameter(1, "const", "PERSONAL_PHYSICIAN"), new Parameter(2, "ctx.patient", "123")))
                 .extracting("result").hasFieldOrPropertyWithValue("booleanValue", false);
         assertThat(auditor.getAuditLog().get(1))
                 .hasFieldOrPropertyWithValue("functionName", "hasRelation")
-                .hasFieldOrPropertyWithValue("parameters", List.of(new Parameter(0, "ctx.user", "admin"), new Parameter(1, "const", "PERSON_OF_TRUST"), new Parameter(2,"ctx.patient", "123")))
+                .hasFieldOrPropertyWithValue("parameters", Lists.newArrayList(new Parameter(0, "ctx.user", "admin"), new Parameter(1, "const", "PERSON_OF_TRUST"), new Parameter(2,"ctx.patient", "123")))
                 .extracting("result").hasFieldOrPropertyWithValue("booleanValue", true);
         assertThat(auditor.getAuditLog().get(2)).hasFieldOrPropertyWithValue("value", "ALLOW");
     }

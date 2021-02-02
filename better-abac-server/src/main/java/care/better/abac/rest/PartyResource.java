@@ -1,6 +1,6 @@
 package care.better.abac.rest;
 
-import com.marand.core.Opt;
+import care.better.core.Opt;
 import care.better.abac.FixedTypes;
 import care.better.abac.dto.PartyDto;
 import care.better.abac.external.PartyInfoService;

@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public class HasAnyTagFunction extends ExecutableFunction {
 
     @Executable(type = Executable.Type.EVALUATE)
-    public EvaluationExpression hasAnyRoleEvaluate(Object... tags) {
+    public EvaluationExpression hasAnyTagEvaluate(Object... tags) {
         return TagSetEvaluationExpression.create(Arrays.stream(tags).map(Object::toString).collect(Collectors.toSet()));
     }
 
     @Executable(type = Executable.Type.QUERY)
-    public EvaluationExpression hasAnyRoleQuery(Object... tags) {
-        return hasAnyRoleEvaluate(tags);
+    public EvaluationExpression hasAnyTagQuery(Object... tags) {
+        return hasAnyTagEvaluate(tags);
     }
 }

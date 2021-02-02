@@ -32,16 +32,16 @@ public class HasAnyRelationFunction extends ExecutableFunction {
 
     @Transactional(readOnly = true)
     @Executable(type = Type.EVALUATE)
-    public EvaluationExpression hasAnyRelationEvaluate(String sourceId, Object targetIds, Object... relationNames) {
+    public EvaluationExpression hasAnyRelationEvaluate(Object sourceIds, Object targetIds, Object... relationNames) {
         Collection<String> ids = convertIds(targetIds);
-        return new BooleanEvaluationExpression(!ids.isEmpty() && findBySourceAndTargetExternalIdsAndRelations(Collections.singleton(sourceId), ids, OffsetDateTime.now(),
+        return new BooleanEvaluationExpression(!ids.isEmpty() && findBySourceAndTargetExternalIdsAndRelations(convertIds(sourceIds), ids, OffsetDateTime.now(),
                                                                        convertRelationNames(relationNames)));
     }
 
     @Transactional(readOnly = true)
     @Executable(type = Type.QUERY)
-    public EvaluationExpression hasAnyRelationQuery(String sourceId, Object targetIds, Object... relationNames) {
-        return ResultSetEvaluationExpression.create(queryBySourceOrTargetExternalIdsAndRelations(Collections.singleton(sourceId), convertIds(targetIds), OffsetDateTime.now(),
+    public EvaluationExpression hasAnyRelationQuery(Object sourceIds, Object targetIds, Object... relationNames) {
+        return ResultSetEvaluationExpression.create(queryBySourceOrTargetExternalIdsAndRelations(convertIds(sourceIds), convertIds(targetIds), OffsetDateTime.now(),
                                                             convertRelationNames(relationNames)));
     }
 

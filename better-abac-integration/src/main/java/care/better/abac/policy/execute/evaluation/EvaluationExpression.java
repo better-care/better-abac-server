@@ -17,7 +17,8 @@ import lombok.Setter;
                       @Type(value = BooleanEvaluationExpression.class, name = "BooleanEvaluation"),
                       @Type(value = BooleanOperationEvaluationExpression.class, name = "BooleanOperation"),
                       @Type(value = ResultSetEvaluationExpression.class, name = "ResultSet"),
-                      @Type(value = TagSetEvaluationExpression.class, name = "TagSet")
+                      @Type(value = TagSetEvaluationExpression.class, name = "TagSet"),
+                      @Type(value = ValueSetEvaluationExpression.class, name = "ValueSet")
               })
 public abstract class EvaluationExpression implements BinaryTreeElement<EvaluationExpression, EvaluationExpression> {
     @Getter

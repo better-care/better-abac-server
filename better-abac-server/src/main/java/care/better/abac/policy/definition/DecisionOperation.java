@@ -56,7 +56,7 @@ public class DecisionOperation implements PolicyRule {
                 if (expression instanceof BooleanEvaluationExpression) {
                     return new BooleanEvaluationExpression(!((BooleanEvaluationExpression)expression).getBooleanValue());
                 } else {
-                    return new BooleanOperationEvaluationExpression(BooleanOperation.NOT, expression, null);
+                    return new BooleanOperationEvaluationExpression(BooleanOperation.NOT, null, expression);
                 }
             default:
                 throw new IllegalStateException("Unexpected quantifier: " + quantifier);

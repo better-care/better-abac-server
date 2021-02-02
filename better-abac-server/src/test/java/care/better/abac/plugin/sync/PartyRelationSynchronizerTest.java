@@ -1,5 +1,6 @@
 package care.better.abac.plugin.sync;
 
+import care.better.abac.plugin.PartyRelationSynchronizer;
 import com.google.common.collect.Sets;
 import care.better.abac.dto.PartyRelationDto;
 import care.better.abac.jpa.entity.Party;

@@ -1,9 +1,8 @@
 package care.better.abac;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import care.better.abac.dto.config.ExternalPolicyMapper;
 import care.better.abac.dto.config.ExternalSystemMapper;
-import care.better.abac.external.ExternalSystemConfigurationScheduler;
+import care.better.abac.external.ExternalSystemSchedulerConfiguration;
 import care.better.abac.external.ExternalSystemService;
 import care.better.abac.external.ExternalSystemServiceImpl;
 import care.better.abac.external.PartyInfoService;
@@ -17,6 +16,7 @@ import care.better.abac.oauth.OAuth2Configuration;
 import care.better.abac.plugin.config.PluginConfiguration;
 import care.better.abac.policy.config.PolicyConfiguration;
 import care.better.abac.rest.client.ExternalSystemRestClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -47,7 +47,11 @@ import java.util.List;
 @EnableJpaRepositories(repositoryBaseClass = QueryDslRepositoryImpl.class, basePackages = "care.better.abac.jpa.repo")
 @ComponentScan(basePackages = {"care.better.abac.rest", "care.better.abac.audit", "care.better.abac.external", "care.better.abac.plugin"},
                excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class))
-@Import({PluginConfiguration.class, PolicyConfiguration.class, OAuth2Configuration.class, OAuth2ClientConfiguration.class})
+@Import({PluginConfiguration.class,
+                PolicyConfiguration.class,
+                OAuth2Configuration.class,
+                OAuth2ClientConfiguration.class,
+                ExternalSystemSchedulerConfiguration.class})
 public class AbacConfiguration {
     private static final Logger log = LogManager.getLogger(AbacConfiguration.class.getName());
 
@@ -120,11 +124,6 @@ public class AbacConfiguration {
             ExternalSystemMapper mapper,
             ExternalSystemRestClient externalSystemRestClient) {
         return new ExternalSystemServiceImpl(externalSystemRepository, mapper, externalSystemRestClient);
-    }
-
-    @Bean
-    public ExternalSystemConfigurationScheduler externalSystemConfigurationScheduler(ExternalSystemService externalSystemService) {
-        return new ExternalSystemConfigurationScheduler(externalSystemService);
     }
 
     public List<PartyInfoConf> getServices() {

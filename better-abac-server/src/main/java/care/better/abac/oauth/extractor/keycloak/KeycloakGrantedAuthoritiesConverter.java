@@ -1,7 +1,7 @@
 package care.better.abac.oauth.extractor.keycloak;
 
 import com.google.common.collect.Sets;
-import com.marand.core.Opt;
+import care.better.core.Opt;
 import care.better.abac.oauth.SsoConfiguration;
 import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;

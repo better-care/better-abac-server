@@ -1,5 +1,6 @@
 package care.better.abac;
 
+import care.better.abac.plugin.listener.PartyRelationAsyncServiceRestController;
 import care.better.abac.rest.ExternalSystemResource;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,6 +20,7 @@ public class BaseWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         web.ignoring()
                 .antMatchers("/*")
                 .mvcMatchers(HttpMethod.GET, ExternalSystemResource.BASE_PATH + "/*")
-                .mvcMatchers(HttpMethod.POST, ExternalSystemResource.BASE_PATH + "/*/validate");
+                .mvcMatchers(HttpMethod.POST, ExternalSystemResource.BASE_PATH + "/*/validate")
+                .mvcMatchers(HttpMethod.POST, PartyRelationAsyncServiceRestController.STATIC_PATH + "/**");
     }
 }

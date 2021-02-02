@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * @author Andrej Dolenc
  */
 @Component
-public class AsTags extends ExecutableConversion {
+public class AsTagsConversion extends ExecutableConversion {
 
     @Executable(type = Executable.Type.CONVERT)
     public EvaluationExpression asTagsConversion(EvaluationExpression expression, String tag) {
