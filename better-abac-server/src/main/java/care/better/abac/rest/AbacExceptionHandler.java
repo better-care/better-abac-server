@@ -36,7 +36,7 @@ public class AbacExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = PartyRelationInvalidTypesException.class)
+    @ExceptionHandler(PartyRelationInvalidTypesException.class)
     public ExceptionData exceptionHandler(PartyRelationInvalidTypesException exception) {
         return new ExceptionData(exception);
     }

@@ -4,11 +4,13 @@ import care.better.abac.dto.PartyRelationDto;
 import care.better.abac.exception.PartyRelationInvalidTypesException;
 import care.better.abac.jpa.entity.PartyRelation;
 import care.better.abac.jpa.entity.PartyType;
+import care.better.abac.jpa.entity.RelationType;
 import care.better.abac.jpa.repo.PartyRelationRepository;
 import care.better.abac.jpa.repo.PartyRepository;
 import care.better.abac.jpa.repo.RelationTypeRepository;
 import care.better.abac.plugin.spi.AsyncPartyRelationService;
 import care.better.abac.plugin.spi.SynchronizingPartyRelationService;
+import care.better.core.Opt;
 import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,16 +26,19 @@ import java.util.Set;
 public class PartyRelationSynchronizer {
     private static final Logger log = LogManager.getLogger(PartyRelationSynchronizer.class);
 
+    private final PartyRelationServiceInitializer partyRelationServiceInitializer;
     private final PartyRelationRepository partyRelationRepository;
     private final PartyRepository partyRepository;
     private final RelationTypeRepository relationTypeRepository;
     private final PartyChangeMapper partyChangeMapper;
 
     public PartyRelationSynchronizer(
+            @NonNull PartyRelationServiceInitializer partyRelationServiceInitializer,
             @NonNull PartyRelationRepository partyRelationRepository,
             @NonNull PartyRepository partyRepository,
             @NonNull RelationTypeRepository relationTypeRepository,
             @NonNull PartyChangeMapper partyChangeMapper) {
+        this.partyRelationServiceInitializer = partyRelationServiceInitializer;
         this.partyRelationRepository = partyRelationRepository;
         this.partyRepository = partyRepository;
         this.relationTypeRepository = relationTypeRepository;
@@ -96,7 +101,11 @@ public class PartyRelationSynchronizer {
     private void map(PartyRelationDto dto, PartyRelation partyRelation) {
         partyRelation.setSource(partyRepository.findById(dto.getSource()).get());
         partyRelation.setTarget(partyRepository.findById(dto.getTarget()).get());
-        partyRelation.setRelationType(relationTypeRepository.findByName(dto.getRelationType()));
+        RelationType relationType = Opt.of(relationTypeRepository.findByName(dto.getRelationType()))
+                .orElseGet(() -> partyRelationServiceInitializer.findOrCreateRelationType(new care.better.abac.plugin.RelationType(
+                        dto.getRelationType(), partyRelation.getSource().getType().getName(), partyRelation.getTarget().getType().getName()
+                )));
+        partyRelation.setRelationType(relationType);
         partyRelation.setValidUntil(dto.getValidUntil());
     }
 

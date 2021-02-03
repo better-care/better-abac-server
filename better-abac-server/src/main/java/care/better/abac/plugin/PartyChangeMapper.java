@@ -2,9 +2,11 @@ package care.better.abac.plugin;
 
 import care.better.abac.dto.PartyRelationDto;
 import care.better.abac.jpa.entity.Party;
+import care.better.abac.jpa.entity.PartyType;
 import care.better.abac.jpa.repo.PartyRepository;
 import care.better.abac.jpa.repo.PartyTypeRepository;
 import care.better.abac.rest.MappingUtils;
+import care.better.core.Opt;
 import lombok.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +44,14 @@ public class PartyChangeMapper {
     private Party updateOrCreateParty(String type, Set<String> externalIds) {
         Party party = Optional.ofNullable(partyRepository.findByTypeAndExternalId(type, externalIds)).orElseGet(() -> {
             Party newParty = new Party();
-            newParty.setType(partyTypeRepository.findByName(type));
+            PartyType partyType = Opt.of(partyTypeRepository.findByName(type))
+                    .orElseGet(() -> {
+                        PartyType entity = new PartyType();
+                        entity.setName(type);
+                        partyTypeRepository.save(entity);
+                        return entity;
+                    });
+            newParty.setType(partyType);
             return newParty;
         });
         party.getExternalIds().addAll(externalIds);

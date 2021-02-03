@@ -56,11 +56,16 @@ public class PluginConfiguration {
 
     @Bean
     public PartyRelationSynchronizer partyRelationSynchronizer(
+            @NonNull PartyRelationServiceInitializer partyRelationServiceInitializer,
             @NonNull PartyRelationRepository partyRelationRepository,
             @NonNull PartyRepository partyRepository,
             @NonNull RelationTypeRepository relationTypeRepository,
             @NonNull PartyChangeMapper partyChangeMapper) {
-        return new PartyRelationSynchronizer(partyRelationRepository, partyRepository, relationTypeRepository, partyChangeMapper);
+        return new PartyRelationSynchronizer(partyRelationServiceInitializer,
+                                             partyRelationRepository,
+                                             partyRepository,
+                                             relationTypeRepository,
+                                             partyChangeMapper);
     }
 
     @Bean

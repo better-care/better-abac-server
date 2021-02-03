@@ -1,5 +1,6 @@
 package care.better.abac.plugin;
 
+import care.better.abac.exception.PartyRelationInvalidTypesException;
 import care.better.abac.jpa.entity.PartyType;
 import care.better.abac.jpa.repo.PartyTypeRepository;
 import care.better.abac.jpa.repo.RelationTypeRepository;
@@ -7,6 +8,7 @@ import care.better.abac.plugin.spi.PartyRelationService;
 import lombok.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -26,7 +28,7 @@ public class PartyRelationServiceInitializer {
 
     @Transactional
     public void initialize(PartyRelationService service) {
-        service.providesFor().forEach(this::createRelationType);
+        service.providesFor().forEach(this::findOrCreateRelationType);
     }
 
     private PartyType findOrCreatePartyType(String partyType) {
@@ -37,13 +39,25 @@ public class PartyRelationServiceInitializer {
         });
     }
 
-    private void createRelationType(RelationType relationType) {
-        Optional.ofNullable(relationTypeRepository.findByName(relationType.getName())).orElseGet(() -> {
-            care.better.abac.jpa.entity.RelationType entity = new care.better.abac.jpa.entity.RelationType();
-            entity.setName(relationType.getName());
-            entity.setAllowedSource(findOrCreatePartyType(relationType.getSourcePartyType()));
-            entity.setAllowedTarget(findOrCreatePartyType(relationType.getTargetPartyType()));
-            return relationTypeRepository.save(entity);
-        });
+    public care.better.abac.jpa.entity.RelationType findOrCreateRelationType(RelationType relationType) {
+        care.better.abac.jpa.entity.RelationType entity =
+                Optional.ofNullable(relationTypeRepository.findByName(relationType.getName())).orElseGet(() -> {
+                    care.better.abac.jpa.entity.RelationType newEntity = new care.better.abac.jpa.entity.RelationType();
+                    newEntity.setName(relationType.getName());
+                    newEntity.setAllowedSource(findOrCreatePartyType(relationType.getSourcePartyType()));
+                    newEntity.setAllowedTarget(findOrCreatePartyType(relationType.getTargetPartyType()));
+                    return relationTypeRepository.save(newEntity);
+                });
+        if (!Objects.equals(relationType.getSourcePartyType(), entity.getAllowedSource().getName())
+                || !Objects.equals(relationType.getTargetPartyType(), entity.getAllowedTarget().getName())) {
+            throw new PartyRelationInvalidTypesException(String.format(
+                    "Relation type %s already exists, but between different party types (%s->%s) than declared by the synchronization plugin (%s->%s)",
+                    relationType.getName(),
+                    entity.getAllowedSource().getName(),
+                    entity.getAllowedTarget().getName(),
+                    relationType.getSourcePartyType(),
+                    relationType.getTargetPartyType()));
+        }
+        return entity;
     }
 }

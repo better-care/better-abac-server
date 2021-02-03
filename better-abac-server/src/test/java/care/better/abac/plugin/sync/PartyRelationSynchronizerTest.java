@@ -1,5 +1,7 @@
 package care.better.abac.plugin.sync;
 
+import care.better.abac.jpa.repo.PartyTypeRepository;
+import care.better.abac.plugin.PartyRelationServiceInitializer;
 import care.better.abac.plugin.PartyRelationSynchronizer;
 import com.google.common.collect.Sets;
 import care.better.abac.dto.PartyRelationDto;
@@ -13,14 +15,17 @@ import care.better.abac.plugin.ChangeType;
 import care.better.abac.plugin.PartyChangeMapper;
 import care.better.abac.plugin.PartyRelationChange;
 import care.better.abac.plugin.spi.SynchronizingPartyRelationService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.verification.VerificationMode;
 
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 
 /**
@@ -30,26 +35,54 @@ public class PartyRelationSynchronizerTest {
     private static final Instant NOW = Instant.now();
     private static final care.better.abac.plugin.RelationType RELATION_TYPE =
             new care.better.abac.plugin.RelationType("PERSONAL_PHYSICIAN", "USER", "PATIENT");
+    private static final care.better.abac.plugin.RelationType RELATION_TYPE_2 =
+            new care.better.abac.plugin.RelationType("PERSONAL_DENTIST", "USER", "PATIENT");
+    private static final care.better.abac.plugin.RelationType RELATION_TYPE_3 =
+            new care.better.abac.plugin.RelationType("RELATED_TO", "USER", "PATIENT");
     private static final PartyType USER_TYPE = createType("USER");
     private static final PartyType PATIENT_TYPE = createType("PATIENT");
     private static final Party USER = createParty(1L, USER_TYPE);
     private static final Party PATIENT = createParty(2L, PATIENT_TYPE);
     private final PartyRelationRepository partyRelationRepository = Mockito.mock(PartyRelationRepository.class);
     private final PartyRepository partyRepository = Mockito.mock(PartyRepository.class);
+    private final PartyTypeRepository partyTypeRepository = Mockito.mock(PartyTypeRepository.class);
     private final RelationTypeRepository relationTypeRepository = Mockito.mock(RelationTypeRepository.class);
     private final PartyChangeMapper partyChangeMapper = Mockito.mock(PartyChangeMapper.class);
     private final SynchronizingPartyRelationService service = Mockito.mock(SynchronizingPartyRelationService.class);
-    private final PartyRelationSynchronizer synchronizer =
-            new PartyRelationSynchronizer(partyRelationRepository, partyRepository, relationTypeRepository, partyChangeMapper);
+    private final PartyRelationServiceInitializer partyRelationServiceInitializer = new PartyRelationServiceInitializer(partyTypeRepository,
+                                                                                                                        relationTypeRepository);
+    private final PartyRelationSynchronizer synchronizer = new PartyRelationSynchronizer(partyRelationServiceInitializer,
+                                                                                         partyRelationRepository,
+                                                                                         partyRepository,
+                                                                                         relationTypeRepository,
+                                                                                         partyChangeMapper);
 
     @Before
     public void setUp() {
         Mockito.reset(partyRelationRepository, partyRepository, relationTypeRepository, partyChangeMapper, service);
-        Mockito.doReturn(new PartyRelationDto(1L, 1L, "PERSONAL_PHYSICIAN", 2L)).when(partyChangeMapper).map(any());
+        Mockito.when(partyChangeMapper.map(any()))
+                .then(invocation -> new PartyRelationDto(1L, 1L, invocation.<PartyRelationChange>getArgument(0).getRelationType().getName(), 2L));
         Mockito.doReturn(Optional.of(USER)).when(partyRepository).findById(1L);
         Mockito.doReturn(Optional.of(PATIENT)).when(partyRepository).findById(2L);
         Mockito.doReturn(createRelationType("PERSONAL_PHYSICIAN", USER_TYPE, PATIENT_TYPE)).when(relationTypeRepository).findByName("PERSONAL_PHYSICIAN");
+        Mockito.when(relationTypeRepository.save(any())).then(invocation -> invocation.getArgument(0));
+        Mockito.when(partyTypeRepository.save(any())).then(invocation -> invocation.getArgument(0));
+        Mockito.when(partyTypeRepository.findByName(any())).then(invocation -> {
+            String typeName = invocation.getArgument(0);
+            if ("USER".equals(typeName)) {
+                return USER_TYPE;
+            } else if ("PATIENT".equals(typeName)) {
+                return PATIENT_TYPE;
+            } else {
+                return null;
+            }
+        });
         Mockito.doReturn(Collections.singleton(RELATION_TYPE)).when(service).providesFor();
+    }
+
+    @After
+    public void tearDown() {
+        Mockito.validateMockitoUsage();
     }
 
     @Test
@@ -60,7 +93,7 @@ public class PartyRelationSynchronizerTest {
         synchronizer.syncInitial(service, NOW);
         Mockito.verify(partyRelationRepository).deleteByPartyAndRelationType(isNull(), isNull(), eq("PERSONAL_PHYSICIAN"));
         Mockito.verify(partyRelationRepository).save(argThat(
-                m -> USER.equals(m.getSource()) && PATIENT.equals(m.getTarget()) && "PERSONAL_PHYSICIAN".equals(m.getRelationType().getName())));
+                rel -> USER.equals(rel.getSource()) && PATIENT.equals(rel.getTarget()) && "PERSONAL_PHYSICIAN".equals(rel.getRelationType().getName())));
     }
 
     @Test
@@ -74,7 +107,26 @@ public class PartyRelationSynchronizerTest {
         synchronizer.sync(service, NOW, NOW.plusSeconds(1));
         Mockito.verify(partyRelationRepository).deleteByPartyAndRelationType(eq("1"), eq("2"), eq("PERSONAL_PHYSICIAN"));
         Mockito.verify(partyRelationRepository).save(argThat(
-                m -> USER.equals(m.getSource()) && PATIENT.equals(m.getTarget()) && "PERSONAL_PHYSICIAN".equals(m.getRelationType().getName())));
+                rel -> USER.equals(rel.getSource()) && PATIENT.equals(rel.getTarget()) && "PERSONAL_PHYSICIAN".equals(rel.getRelationType().getName())));
+
+    }
+
+    @Test
+    public void testSyncNewRelation() {
+        PartyRelationChange delete = new PartyRelationChange(Collections.singleton("1"), Collections.singleton("2"),
+                                                             RELATION_TYPE_2, ChangeType.DELETE, null);
+        PartyRelationChange insert = new PartyRelationChange(Collections.singleton("1"), Collections.singleton("2"),
+                                                             RELATION_TYPE_3, ChangeType.INSERT, null);
+
+        Mockito.doReturn(Sets.newHashSet(delete, insert)).when(service).sync(eq(NOW), eq(NOW.plusSeconds(1)));
+        synchronizer.sync(service, NOW, NOW.plusSeconds(1L));
+        Mockito.verify(relationTypeRepository).save(argThat(
+                rt -> RELATION_TYPE_3.getName().equals(rt.getName())
+                        && "USER".equals(rt.getAllowedSource().getName())
+                        && "PATIENT".equals(rt.getAllowedTarget().getName())));
+        Mockito.verify(partyRelationRepository).deleteByPartyAndRelationType(eq("1"), eq("2"), eq("PERSONAL_DENTIST"));
+        Mockito.verify(partyRelationRepository).save(argThat(
+                rel -> USER.equals(rel.getSource()) && PATIENT.equals(rel.getTarget()) && "RELATED_TO".equals(rel.getRelationType().getName())));
 
     }
 
