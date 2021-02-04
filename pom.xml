@@ -28,7 +28,6 @@
         <lombok.version>1.18.10</lombok.version>
         <pf4j.version>3.1.0</pf4j.version>
         <guava.version>19.0</guava.version>
-        <oracle.version>11.2.0.4</oracle.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-configuration.version>2.7</commons-configuration.version>
         <shedlock.version>4.12.0</shedlock.version>
@@ -93,11 +92,6 @@
                 <groupId>net.javacrumbs.shedlock</groupId>
                 <artifactId>shedlock-provider-jdbc-template</artifactId>
                 <version>${shedlock.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>oracle</groupId>
-                <artifactId>ojdbc6</artifactId>
-                <version>${oracle.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.querydsl</groupId>
