@@ -92,10 +92,11 @@ jobs:
               else
                   TAG="$(echo $CIRCLE_BRANCH | awk -F'/' '{print $2;}')-rc"
               fi
+             ./mvnw clean install -DskipTests -pl num-consent-plugin -am
+              cp num-consent-plugin/target/num-consent-plugin.zip better-abac-server/target/classes/num-consent-plugin.zip
               echo "Publishing Docker image with following tag: ${TAG}"
               echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
-              cd better-abac-server
-              ../mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=$DOCKER_USER/abac-server:$TAG -Dmaven.test.skip
+              ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=$DOCKER_USER/abac-server:$TAG -Dmaven.test.skip -pl better-abac-server -am
               docker push $DOCKER_USER/abac-server:$TAG
 
 commands:
@@ -116,13 +117,13 @@ commands:
         steps:
             - run:
                   name: Generate Cache Checksum for Maven Dependencies
-                  command: find /home/circleci/project -name 'pom.xml' | sort | xargs cat > /tmp/aql-editor_maven_cache_seed
+                  command: find /home/circleci/project -name 'pom.xml' | sort | xargs cat > /tmp/better-apac_maven_cache_seed
             - restore_cache:
-                  key: v1-aql-editor-deps-
+                  key: v1-better-apac-deps-
 
     cache-in-maven-dependencies:
         steps:
             - save_cache:
-                  key: v1-aql-editor-deps-{{ checksum "/tmp/aql-editor_maven_cache_seed" }}
+                  key: v1-better-apac-deps-{{ checksum "/tmp/better-apac_maven_cache_seed" }}
                   paths:
                       - ~/.m2

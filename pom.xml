@@ -10,6 +10,7 @@
         <module>better-abac-server</module>
         <module>better-abac-plugin</module>
         <module>better-abac-integration</module>
+        <module>num-consent-plugin</module>
     </modules>
     <packaging>pom</packaging>
 

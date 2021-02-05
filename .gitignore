@@ -69,3 +69,4 @@ target/
 
 bower_components/
 node_modules/
+.java-version
