@@ -92,7 +92,7 @@ jobs:
               else
                   TAG="$(echo $CIRCLE_BRANCH | awk -F'/' '{print $2;}')-rc"
               fi
-             ./mvnw clean install -DskipTests -pl num-consent-plugin -am
+              ./mvnw clean install -DskipTests -pl num-consent-plugin -am
               cp num-consent-plugin/target/num-consent-plugin.zip better-abac-server/target/classes/num-consent-plugin.zip
               echo "Publishing Docker image with following tag: ${TAG}"
               echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
