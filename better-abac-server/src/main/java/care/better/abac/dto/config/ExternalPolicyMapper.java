@@ -6,6 +6,7 @@ import care.better.abac.jpa.entity.ExternalSystemEntity;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class ExternalPolicyMapper {
         dto.setExternalId(entity.getExternalId());
 
         dto.setType(entity.getType());
+        dto.setPhase(Optional.ofNullable(entity.getPhase()).orElse(ExternalPolicyPhase.PRE_PROCESS));
         dto.setConfig(entity.getConfig());
 
         return dto;
@@ -41,6 +43,7 @@ public class ExternalPolicyMapper {
         targetEntity.setName(sourceDto.getName());
 
         targetEntity.setType(sourceDto.getType());
+        targetEntity.setPhase(Optional.ofNullable(sourceDto.getPhase()).orElse(ExternalPolicyPhase.PRE_PROCESS));
         targetEntity.setConfig(sourceDto.getConfig());
     }
 
@@ -52,6 +55,7 @@ public class ExternalPolicyMapper {
     private List<String> getPolicyValuesForHash(ExternalPolicyEntity policy) {
         return Stream.of(policy.getName(),
                          policy.getType(),
+                         policy.getPhase(),
                          policy.getConfig()).map(String::valueOf).collect(Collectors.toList());
     }
 }

@@ -11,6 +11,7 @@ create table external_policy (
     external_id varchar(255) not null,
     name varchar(255) not null,
     type int not null,
+    phase varchar(255) not null default 'PRE_PROCESS',
     version int,
     external_system_id bigint not null,
     primary key (id));

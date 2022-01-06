@@ -1,8 +1,11 @@
 package care.better.abac.jpa.entity;
 
+import care.better.abac.dto.config.ExternalPolicyPhase;
 import care.better.abac.dto.config.ExternalPolicyType;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,6 +34,10 @@ public class ExternalPolicyEntity {
     private String name;
     @NotNull
     private ExternalPolicyType type;
+
+    @Enumerated(EnumType.STRING)
+    private ExternalPolicyPhase phase;
+
     @NotNull
     @Lob
     private String config;
@@ -60,6 +67,14 @@ public class ExternalPolicyEntity {
 
     public void setType(ExternalPolicyType type) {
         this.type = type;
+    }
+
+    public ExternalPolicyPhase getPhase() {
+        return phase;
+    }
+
+    public void setPhase(ExternalPolicyPhase phase) {
+        this.phase = phase;
     }
 
     public String getConfig() {

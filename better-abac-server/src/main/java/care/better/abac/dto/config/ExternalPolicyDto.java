@@ -7,6 +7,7 @@ public class ExternalPolicyDto {
     private String externalId;
     private String name;
     private ExternalPolicyType type;
+    private ExternalPolicyPhase phase;
     private String config;
 
     public String getExternalId() {
@@ -31,6 +32,14 @@ public class ExternalPolicyDto {
 
     public void setType(ExternalPolicyType type) {
         this.type = type;
+    }
+
+    public ExternalPolicyPhase getPhase() {
+        return phase;
+    }
+
+    public void setPhase(ExternalPolicyPhase phase) {
+        this.phase = phase;
     }
 
     public String getConfig() {

@@ -1,4 +1,6 @@
 application.properties
+application-dev.properties
+application-dev.yml
 keycloak.json
 log4j2.xml
 ### JetBrains template
@@ -64,6 +66,7 @@ hs_err_pid*
 
 
 target/
+log/
 
 bower_components/
 node_modules/
