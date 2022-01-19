@@ -46,7 +46,7 @@
         <osgi-core.version>6.0.0</osgi-core.version>
         <log4j.version>1.2.17</log4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <log4j2.version>2.17.0</log4j2.version>
+        <log4j2.version>2.17.1</log4j2.version>
         <db-schema.version>2.1.0</db-schema.version>
         <reflections.version>0.9.9</reflections.version>
 
