@@ -4,7 +4,6 @@ spring.datasource.password=password
 spring.jpa.database-platform=org.hibernate.dialect.Oracle12cDialect
 #spring.datasource.driver-class-name=org.postgresql.Driver
 spring.jpa.hibernate.naming-strategy=org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
-spring.jpa.hibernate.ddl-auto=update
 
 spring.jackson.serialization-inclusion=non_null
 spring.jackson.serialization.write_dates_as_timestamps=false
