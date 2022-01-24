@@ -14,12 +14,4 @@ public class ClientAuthConfiguration {
     @Getter
     @Setter
     private String type;
-
-    @Getter
-    @Setter
-    private String username;
-
-    @Getter
-    @Setter
-    private String password;
 }

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizationContext;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
@@ -37,7 +36,7 @@ public class OAuth2ClientConfiguration {
         OAuth2AuthorizedClientProvider authorizedClientProvider =
                 OAuth2AuthorizedClientProviderBuilder.builder()
                         .refreshToken()
-                        .password()
+                        .clientCredentials()
                         .build();
         AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager = new AuthorizedClientServiceOAuth2AuthorizedClientManager(
                 clientRegistrationRepository, oAuth2AuthorizedClientService);
@@ -50,8 +49,6 @@ public class OAuth2ClientConfiguration {
     public AuthorizationProvider authorizationProvider(@NonNull AuthorizedClientServiceOAuth2AuthorizedClientManager manager) {
         OAuth2AuthorizeRequest request = OAuth2AuthorizeRequest.withClientRegistrationId(clientAuthConfiguration.getType())
                 .principal(new AnonymousAuthenticationToken())
-                .attribute(OAuth2AuthorizationContext.USERNAME_ATTRIBUTE_NAME, clientAuthConfiguration.getUsername())
-                .attribute(OAuth2AuthorizationContext.PASSWORD_ATTRIBUTE_NAME, clientAuthConfiguration.getPassword())
                 .build();
         return () -> Optional.ofNullable(manager.authorize(request))
                 .map(p -> TokenType.BEARER.getValue() + ' ' + p.getAccessToken().getTokenValue())

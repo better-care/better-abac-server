@@ -32,11 +32,10 @@ sso.abac-context-mapping[0].context-key=workplaceId
 
 # Client authentication
 client.auth.type=oauth2
-spring.security.oauth2.client.registration.oauth2.authorization-grant-type=password
-spring.security.oauth2.client.registration.oauth2.client-id=abac
-spring.security.oauth2.client.provider.oauth2.token-uri=https://localhost/auth/realms/abac/protocol/openid-connect/token
-client.auth.username=username
-client.auth.password=password
+spring.security.oauth2.client.registration.oauth2.authorization-grant-type=client_credentials
+spring.security.oauth2.client.registration.oauth2.client-id=abac-client
+spring.security.oauth2.client.registration.oauth2.client-secret=client-secret
+spring.security.oauth2.client.provider.oauth2.token-uri=https://localhost:8202/auth/realms/abac/protocol/openid-connect/token
 
 # Async service
 async.rest.base-callback-url=http://localhost:8080/
