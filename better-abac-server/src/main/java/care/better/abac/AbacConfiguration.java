@@ -10,6 +10,7 @@ import care.better.abac.external.PartyInfoService;
 import care.better.abac.external.demographics.DemographicsPartyInfoService;
 import care.better.abac.external.keycloak.KeycloakPartyInfoService;
 import care.better.abac.external.noop.NoopPartyInfoService;
+import care.better.abac.health.HikariConnectionPoolHealthIndicator;
 import care.better.abac.jpa.QueryDslRepositoryImpl;
 import care.better.abac.jpa.repo.ExternalSystemRepository;
 import care.better.abac.oauth.OAuth2ClientConfiguration;
@@ -18,6 +19,7 @@ import care.better.abac.plugin.config.PluginConfiguration;
 import care.better.abac.policy.config.PolicyConfiguration;
 import care.better.abac.rest.client.ExternalSystemRestClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -31,10 +33,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,6 +130,23 @@ public class AbacConfiguration {
             ExternalSystemMapper mapper,
             ExternalSystemRestClient externalSystemRestClient) {
         return new ExternalSystemServiceImpl(externalSystemRepository, mapper, externalSystemRestClient);
+    }
+
+    @Bean
+    public MBeanExporter dataSourceMBeanExporter() {
+        MBeanExporter mBeanExporter = new MBeanExporter();
+        mBeanExporter.setAutodetect(true);
+        mBeanExporter.setExcludedBeans("dataSource");
+
+        return mBeanExporter;
+    }
+
+    @Bean
+    public HikariConnectionPoolHealthIndicator hikariConnectionPoolHealthIndicator(DataSource dataSource) {
+        if (dataSource instanceof HikariDataSource) {
+            return new HikariConnectionPoolHealthIndicator((HikariDataSource)dataSource);
+        }
+        return null;
     }
 
     public List<PartyInfoConf> getServices() {

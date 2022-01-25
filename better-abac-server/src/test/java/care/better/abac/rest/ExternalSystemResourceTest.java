@@ -7,6 +7,7 @@ import care.better.abac.dto.config.ExternalSystemDto;
 import care.better.abac.dto.config.ExternalSystemInputDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {AbacConfiguration.class, PolicyExecutionResourceTest.Config.class})
 @EnableConfigurationProperties
-@EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
 @AutoConfigureTestDatabase
 @TestPropertySource(properties = "sso.enabled = false")
 public class ExternalSystemResourceTest {

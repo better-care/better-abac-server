@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -35,10 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -54,7 +52,7 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {AbacConfiguration.class, Config.class})
 @EnableConfigurationProperties
-@EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
 @AutoConfigureTestDatabase
 @TestPropertySource(properties = {"sso.enabled = false"})
 public class PolicyResourceTest {

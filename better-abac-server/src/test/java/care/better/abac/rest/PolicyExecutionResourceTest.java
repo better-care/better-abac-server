@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -54,7 +55,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {AbacConfiguration.class, Config.class})
 @EnableConfigurationProperties
-@EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class })
 @AutoConfigureTestDatabase
 @TestPropertySource(properties = "sso.enabled = false")
 public class PolicyExecutionResourceTest {

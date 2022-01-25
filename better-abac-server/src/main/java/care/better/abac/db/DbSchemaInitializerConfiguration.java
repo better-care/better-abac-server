@@ -24,7 +24,9 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-
+/**
+ * @author Gregor Berger
+ */
 @Configuration
 public class DbSchemaInitializerConfiguration {
 

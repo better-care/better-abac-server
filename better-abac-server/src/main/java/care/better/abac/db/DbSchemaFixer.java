@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
+ * @author Gregor Berger
+ *
  * Used to fix database schema, when it was initialized with Hibernate and not with thinkehr-db
  */
 public class DbSchemaFixer {

@@ -13,6 +13,7 @@ import care.better.abac.rest.client.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -35,7 +36,7 @@ import static org.assertj.core.api.Assertions.fail;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {AbacConfiguration.class, PolicyExecutionResourceTest.Config.class})
 @TestPropertySource(properties = "abac.configValidationEnabled=true")
-@EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
 @AutoConfigureTestDatabase
 @DirtiesContext
 public class ExternalSystemConfigurationSchedulerTest {

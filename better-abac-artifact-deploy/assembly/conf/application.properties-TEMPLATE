@@ -42,3 +42,8 @@ async.rest.base-callback-url=http://localhost:8080/
 
 # Enable external validation
 abac.configValidationEnabled=true
+spring.datasource.hikari.register-mbeans=true
+
+# Spring Boot Actuator
+management.endpoint.health.show-details=always
+management.endpoints.web.base-path=/

@@ -1,31 +1,29 @@
 package care.better.abac.plugin.sync;
 
-import care.better.abac.jpa.repo.PartyTypeRepository;
-import care.better.abac.plugin.PartyRelationServiceInitializer;
-import care.better.abac.plugin.PartyRelationSynchronizer;
-import com.google.common.collect.Sets;
 import care.better.abac.dto.PartyRelationDto;
 import care.better.abac.jpa.entity.Party;
 import care.better.abac.jpa.entity.PartyType;
 import care.better.abac.jpa.entity.RelationType;
 import care.better.abac.jpa.repo.PartyRelationRepository;
 import care.better.abac.jpa.repo.PartyRepository;
+import care.better.abac.jpa.repo.PartyTypeRepository;
 import care.better.abac.jpa.repo.RelationTypeRepository;
 import care.better.abac.plugin.ChangeType;
 import care.better.abac.plugin.PartyChangeMapper;
 import care.better.abac.plugin.PartyRelationChange;
+import care.better.abac.plugin.PartyRelationServiceInitializer;
+import care.better.abac.plugin.PartyRelationSynchronizer;
 import care.better.abac.plugin.spi.SynchronizingPartyRelationService;
+import com.google.common.collect.Sets;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.verification.VerificationMode;
 
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 
 /**
