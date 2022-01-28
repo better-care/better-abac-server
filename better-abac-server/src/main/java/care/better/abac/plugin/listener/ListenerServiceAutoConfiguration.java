@@ -6,7 +6,6 @@ import care.better.abac.plugin.PluginManager;
 import care.better.abac.plugin.PluginManager.Key;
 import care.better.abac.plugin.SynchronizationPhase;
 import care.better.abac.plugin.SynchronizationTaskRunner;
-import care.better.abac.plugin.condition.ConditionalOnServiceType;
 import care.better.abac.plugin.config.PluginConfiguration;
 import care.better.abac.plugin.shedlock.RunnableWithLockConfiguration;
 import care.better.abac.plugin.shedlock.ShedlockConfiguration;
@@ -38,9 +37,7 @@ import static care.better.abac.plugin.listener.PartyRelationAsyncServiceRestCont
 /**
  * @author Andrej Dolenc
  */
-@SuppressWarnings("rawtypes")
 @Configuration
-@ConditionalOnServiceType(AsyncPartyRelationService.class)
 @Import({PartyRelationAsyncServiceRestController.class, ShedlockConfiguration.class})
 @AutoConfigureAfter(PluginConfiguration.class)
 public class ListenerServiceAutoConfiguration {
@@ -59,6 +56,10 @@ public class ListenerServiceAutoConfiguration {
 
         Map<Key, AsyncPartyRelationService<?>> pluginServices = pluginManager.getServicesOfType(AsyncPartyRelationService.class)
                 .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> (AsyncPartyRelationService<?>)entry.getValue()));
+        if (pluginServices.isEmpty()) {
+            return;
+        }
+
         Preconditions.checkArgument(pluginServices.values().stream().allMatch(service -> service.getEndpointType() == EndpointType.REST),
                                     String.format("Only services with endpoint type %s are supported!", EndpointType.REST.name()));
         String baseUrl;

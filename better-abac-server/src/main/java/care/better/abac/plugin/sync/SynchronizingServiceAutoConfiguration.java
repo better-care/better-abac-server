@@ -4,7 +4,6 @@ import care.better.abac.plugin.PluginManager;
 import care.better.abac.plugin.PluginManager.Key;
 import care.better.abac.plugin.SynchronizationPhase;
 import care.better.abac.plugin.SynchronizationTaskRunner;
-import care.better.abac.plugin.condition.ConditionalOnServiceType;
 import care.better.abac.plugin.config.PluginConfiguration;
 import care.better.abac.plugin.shedlock.RunnableWithLockConfiguration;
 import care.better.abac.plugin.shedlock.ShedlockConfiguration;
@@ -25,7 +24,6 @@ import java.util.Map;
  * @author Andrej Dolenc
  */
 @Configuration
-@ConditionalOnServiceType(SynchronizingPartyRelationService.class)
 @Import(ShedlockConfiguration.class)
 @AutoConfigureAfter(PluginConfiguration.class)
 public class SynchronizingServiceAutoConfiguration {
@@ -37,6 +35,7 @@ public class SynchronizingServiceAutoConfiguration {
             @NonNull SynchronizationTaskRunner taskRunner,
             @NonNull LockableTaskScheduler lockableTaskScheduler) {
         Map<Key, SynchronizingPartyRelationService> pluginServices = manager.getServicesOfType(SynchronizingPartyRelationService.class);
+
         pluginServices.entrySet().stream()
                 .map(entry ->
                              new RunnableWithLockConfiguration() {
