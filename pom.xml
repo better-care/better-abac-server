@@ -4,7 +4,7 @@
 
     <groupId>care.better.abac</groupId>
     <artifactId>better-abac</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.8</version>
     <modules>
         <module>better-abac-artifact-deploy</module>
         <module>better-abac-server</module>
@@ -59,19 +59,19 @@
             <dependency>
                 <groupId>care.better.abac</groupId>
                 <artifactId>better-abac-integration</artifactId>
-                <version>1.0.8-SNAPSHOT</version>
+                <version>1.0.8</version>
             </dependency>
 
             <dependency>
                 <groupId>care.better.abac</groupId>
                 <artifactId>better-abac-plugin</artifactId>
-                <version>1.0.8-SNAPSHOT</version>
+                <version>1.0.8</version>
             </dependency>
 
             <dependency>
                 <groupId>care.better.abac</groupId>
                 <artifactId>better-abac-server</artifactId>
-                <version>1.0.8-SNAPSHOT</version>
+                <version>1.0.8</version>
             </dependency>
 
             <dependency>
