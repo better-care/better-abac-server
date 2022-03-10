@@ -19,6 +19,7 @@ public class BaseWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void init(WebSecurity web) {
         web.ignoring()
                 .antMatchers("/*")
+                .antMatchers("/rest/v1/app")
                 .mvcMatchers(HttpMethod.GET, ExternalSystemResource.BASE_PATH + "/*")
                 .mvcMatchers(HttpMethod.POST, ExternalSystemResource.BASE_PATH + "/*/validate")
                 .mvcMatchers(HttpMethod.POST, PartyRelationAsyncServiceRestController.STATIC_PATH + "/**");

@@ -18,6 +18,7 @@ import care.better.abac.oauth.OAuth2Configuration;
 import care.better.abac.plugin.config.PluginConfiguration;
 import care.better.abac.policy.config.PolicyConfiguration;
 import care.better.abac.rest.client.ExternalSystemRestClient;
+import care.better.abac.version.VersionProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
@@ -147,6 +148,11 @@ public class AbacConfiguration {
             return new HikariConnectionPoolHealthIndicator((HikariDataSource)dataSource);
         }
         return null;
+    }
+
+    @Bean
+    public VersionProvider versionProvider() {
+        return new VersionProvider();
     }
 
     public List<PartyInfoConf> getServices() {
