@@ -18,10 +18,8 @@ import java.util.stream.Collectors;
  */
 
 public class PolicyHelper {
-    public final static BiFunction<Authentication, String, String> OAUTH2_TOKEN_ATTRIBUTE_EXTRACTOR =
-            (Authentication auth, String attrPath) -> auth.getPrincipal() instanceof OAuth2AuthenticatedPrincipal
-                    ? (String)((OAuth2AuthenticatedPrincipal)auth.getPrincipal()).getAttributes().get(attrPath)
-                    : null;
+    public static final BiFunction<Authentication, String, Object> OAUTH2_TOKEN_ATTRIBUTE_EXTRACTOR = new OAuthTokenAttributeExtractor();
+
     private final Map<String, ExecutableFunction> executableFunctions;
     private final Map<String, ExecutableConversion> executableConversions;
 

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,9 +85,19 @@ public class PolicyExecutionResource {
                 sso.getAbacContextMapping().stream()
                         .filter(am -> !context.isQueryValue(am.getContextKey()))
                         .forEach(am -> {
-                            String attributeValue = OAUTH2_TOKEN_ATTRIBUTE_EXTRACTOR.apply(authentication, am.getTokenAttributePath());
-                            if (StringUtils.isNotBlank(attributeValue)) {
-                                context.setContextValue(am.getContextKey(), attributeValue);
+                            Object attributeValue = OAUTH2_TOKEN_ATTRIBUTE_EXTRACTOR.apply(authentication, am.getTokenAttributePath());
+                            if (attributeValue != null) {
+                                if (attributeValue instanceof Collection<?>) {
+                                    if (!((Collection<?>)attributeValue).isEmpty()) {
+                                        context.setContextValue(am.getContextKey(), attributeValue);
+                                    }
+                                } else if (attributeValue instanceof String) {
+                                    if (StringUtils.isNotBlank((CharSequence)attributeValue)) {
+                                        context.setContextValue(am.getContextKey(), attributeValue);
+                                    }
+                                } else {
+                                    context.setContextValue(am.getContextKey(), attributeValue);
+                                }
                             }
                         });
             }
