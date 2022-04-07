@@ -20,23 +20,14 @@
             xobj.send(null);
         }
 
-        loadJSON("keycloak.json", function (res) {
-            var authServerUrl = res['auth-server-url'];
-            if(authServerUrl){
-                var keycloakJsPath = authServerUrl + '/js/keycloak.js';
-                var script = document.createElement('script');
-                // script.onload = function () {
-                // };
-                script.src = keycloakJsPath;
-                script.async = true;
-                var head= document.head || document.getElementsByTagName('head')[0];
-                head.appendChild(script);
-
-
-            }else {
-                alert('Could not find "auth-server-url" in keycloak.json file')
-            }
-        })
+        var keycloakJsPath = 'js/keycloak.js';
+        var script = document.createElement('script');
+        // script.onload = function () {
+        // };
+        script.src = keycloakJsPath;
+        script.async = true;
+        //var head= document.head || document.getElementsByTagName('head')[0];
+        //head.appendChild(script);
     </script>
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
