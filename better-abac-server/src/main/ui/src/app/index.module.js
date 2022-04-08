@@ -55,18 +55,7 @@
             return auth;
           });
 
-          if (authenticated) {
-            keycloakAuth.loadUserProfile().success(function (profile) {
-              var $injector = angular.bootstrap(document, ['betterAbacUi']);
-              $injector.invoke(function (Auth) {
-                Auth.username = profile.username;
-              });
-            });
-          } else {
-            //auth.login();
-            angular.bootstrap(document, ['betterAbacUi']);
-          }
-
+          angular.bootstrap(document, ['betterAbacUi']);
         }).error(function () {
           $window.location.reload();
         });
