@@ -8,6 +8,7 @@ import care.better.abac.jpa.repo.PartyRelationRepository;
 import care.better.abac.jpa.repo.PartyRepository;
 import care.better.abac.jpa.repo.RelationTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -56,9 +57,10 @@ public class PartyRelationResource {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
-    public PartyRelationDto findOne(@PathVariable("id") Long id) {
-        PartyRelation partyRelation = partyRelationRepository.findById(id).get();
-        return partyRelation == null ? null : map(partyRelation);
+    public ResponseEntity<PartyRelationDto> findOne(@PathVariable("id") Long id) {
+        return partyRelationRepository.findById(id)
+                .map(this::map).map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -74,17 +76,23 @@ public class PartyRelationResource {
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<PartyRelationDto> update(@PathVariable("id") Long id, @RequestBody PartyRelationDto dto) {
-        PartyRelation partyRelation = partyRelationRepository.findById(id).get();
-        map(dto, partyRelation);
-        validate(partyRelation);
-        return ResponseEntity.ok(map(partyRelation));
+        return partyRelationRepository.findById(id).map(entity -> {
+                    map(dto, entity);
+                    validate(entity);
+                    return ResponseEntity.ok(map(entity));
+                })
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @Transactional
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        partyRelationRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        try {
+            partyRelationRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (EmptyResultDataAccessException ignored) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     private void validate(PartyRelation partyRelation) {

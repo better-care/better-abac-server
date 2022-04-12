@@ -4,6 +4,7 @@ import care.better.abac.dto.PartyTypeDto;
 import care.better.abac.jpa.entity.PartyType;
 import care.better.abac.jpa.repo.PartyTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -44,15 +46,17 @@ public class PartyTypeResource {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public PartyTypeDto findOne(@PathVariable("id") Long id) {
-        PartyType partyType = partyTypeRepository.findById(id).get();
-        return partyType == null ? null : new PartyTypeDto(partyType.getId(), partyType.getName());
+    public ResponseEntity<PartyTypeDto> findOne(@PathVariable("id") Long id) {
+        return partyTypeRepository.findById(id)
+                .map(entity -> new PartyTypeDto(entity.getId(), entity.getName())).map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/name/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public PartyTypeDto findOneByName(@PathVariable("name") String name) {
-        PartyType partyType = partyTypeRepository.findByName(name);
-        return partyType == null ? null : new PartyTypeDto(partyType.getId(), partyType.getName());
+    public ResponseEntity<PartyTypeDto> findOneByName(@PathVariable("name") String name) {
+        return Optional.ofNullable(partyTypeRepository.findByName(name))
+                .map(entity -> new PartyTypeDto(entity.getId(), entity.getName())).map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -66,15 +70,21 @@ public class PartyTypeResource {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PartyTypeDto> update(@PathVariable("id") Long id, @RequestBody PartyTypeDto dto) {
-        PartyType partyType = partyTypeRepository.findById(id).get();
-        partyType.setName(dto.getName());
-        return ResponseEntity.ok(map(partyType));
+        return partyTypeRepository.findById(id).map(entity -> {
+                    entity.setName(dto.getName());
+                    return ResponseEntity.ok(map(entity));
+                })
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        partyTypeRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        try {
+            partyTypeRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (EmptyResultDataAccessException ignored) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 

@@ -1,10 +1,10 @@
 package care.better.abac.rest;
 
-import care.better.core.Opt;
 import care.better.abac.dto.PolicyDto;
 import care.better.abac.jpa.entity.Policy;
 import care.better.abac.jpa.repo.PolicyRepository;
 import care.better.abac.policy.service.PolicyService;
+import care.better.core.Opt;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +33,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -71,15 +70,17 @@ public class PolicyResource {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public PolicyDto findOne(@PathVariable("id") Long id) {
-        Policy policy = policyRepository.findById(id).get();
-        return policy == null ? null : map(policy);
+    public ResponseEntity<PolicyDto> findOne(@PathVariable("id") Long id) {
+        return policyRepository.findById(id)
+                .map(this::map).map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/name/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public PolicyDto findOneByName(@PathVariable("name") String name) {
-        Policy policy = policyRepository.findByName(name);
-        return policy == null ? null : map(policy);
+    public ResponseEntity<PolicyDto> findOneByName(@PathVariable("name") String name) {
+        return Optional.ofNullable(policyRepository.findByName(name))
+                .map(this::map).map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -92,23 +93,27 @@ public class PolicyResource {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PolicyDto> update(@PathVariable("id") Long id, @RequestBody PolicyDto dto) {
-        Policy policy = policyRepository.findById(id).get();
-        map(dto, policy);
+        return policyRepository.findById(id).map(entity -> {
+                    map(dto, entity);
 
-        String policyName = policy.getName();
-        registerPolicySync(Collections.singleton(policyName), true);
+                    String policyName = entity.getName();
+                    registerPolicySync(Collections.singleton(policyName), true);
 
-        return ResponseEntity.ok(map(policy));
+                    return ResponseEntity.ok(map(entity));
+                })
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        Policy policy = policyRepository.findById(id).get();
-        String policyName = policy.getName();
+        return policyRepository.findById(id).map(entity -> {
+                    String policyName = entity.getName();
 
-        policyRepository.deleteById(id);
-        registerPolicySync(Collections.singleton(policyName), false);
-        return ResponseEntity.ok().build();
+                    policyRepository.delete(entity);
+                    registerPolicySync(Collections.singleton(policyName), false);
+                    return ResponseEntity.ok().<Void>build();
+                })
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/export", method = RequestMethod.GET)

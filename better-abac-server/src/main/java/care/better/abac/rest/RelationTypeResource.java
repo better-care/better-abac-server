@@ -5,6 +5,7 @@ import care.better.abac.jpa.entity.RelationType;
 import care.better.abac.jpa.repo.PartyTypeRepository;
 import care.better.abac.jpa.repo.RelationTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -47,15 +49,17 @@ public class RelationTypeResource {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelationTypeDto findOne(@PathVariable("id") Long id) {
-        RelationType relationType = relationTypeRepository.findById(id).get();
-        return relationType == null ? null : map(relationType);
+    public ResponseEntity<RelationTypeDto> findOne(@PathVariable("id") Long id) {
+        return relationTypeRepository.findById(id)
+                .map(this::map).map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/name/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelationTypeDto findOneByName(@PathVariable("name") String name) {
-        RelationType relationType = relationTypeRepository.findByName(name);
-        return relationType == null ? null : map(relationType);
+    public ResponseEntity<RelationTypeDto> findOneByName(@PathVariable("name") String name) {
+        return Optional.ofNullable(relationTypeRepository.findByName(name))
+                .map(this::map).map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -75,25 +79,31 @@ public class RelationTypeResource {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RelationTypeDto> update(@PathVariable("id") Long id, @RequestBody RelationTypeDto dto) {
-        final RelationType relationType = relationTypeRepository.findById(id).get();
-        if (dto.getName() != null) {
-            relationType.setName(dto.getName());
-        }
-        if (dto.getAllowedSourcePartyType() != null) {
-            relationType.setAllowedSource(partyTypeRepository.findByName(dto.getAllowedSourcePartyType()));
-        }
-        if (dto.getAllowedTargetPartyType() != null) {
-            relationType.setAllowedTarget(partyTypeRepository.findByName(dto.getAllowedTargetPartyType()));
-        }
-        RelationType updated = relationTypeRepository.save(relationType);
+        return relationTypeRepository.findById(id).map(entity -> {
+                    if (dto.getName() != null) {
+                        entity.setName(dto.getName());
+                    }
+                    if (dto.getAllowedSourcePartyType() != null) {
+                        entity.setAllowedSource(partyTypeRepository.findByName(dto.getAllowedSourcePartyType()));
+                    }
+                    if (dto.getAllowedTargetPartyType() != null) {
+                        entity.setAllowedTarget(partyTypeRepository.findByName(dto.getAllowedTargetPartyType()));
+                    }
+                    RelationType updated = relationTypeRepository.save(entity);
 
-        return ResponseEntity.ok(map(updated));
+                    return ResponseEntity.ok(map(updated));
+                })
+                .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        relationTypeRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        try {
+            relationTypeRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (EmptyResultDataAccessException ignored) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     private RelationTypeDto map(RelationType relationType) {
