@@ -51,7 +51,7 @@ public class PolicyExecutionResource {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> executeByNameSimple(@PathVariable("name") String name, @RequestBody Map<String, Object> ctx) {
         log.debug("Executing policy {} with simple boolean result, ctx={}", name, ctx);
-        EvaluationExpression expression = evaluate(name, createContext(ctx));
+        EvaluationExpression expression = pdlPolicyService.executeByName(name, createContext(ctx).getContext());
         if (expression instanceof BooleanEvaluationExpression) {
             if (((BooleanEvaluationExpression)expression).getBooleanValue()) {
                 return ResponseEntity.ok().build();
@@ -71,7 +71,7 @@ public class PolicyExecutionResource {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public EvaluationExpression executeByNameComplex(@PathVariable("name") String name, @RequestBody Map<String, Object> ctx) {
         log.debug("Executing policy {} with expression result, ctx={}", name, ctx);
-        return evaluate(name, createContext(ctx));
+        return pdlPolicyService.queryByName(name, createContext(ctx).getContext());
     }
 
     private EvaluationContext createContext(Map<String, Object> ctx) {
@@ -103,11 +103,5 @@ public class PolicyExecutionResource {
             }
         }
         return context;
-    }
-
-    private EvaluationExpression evaluate(String policyName, EvaluationContext context) {
-        return context.hasQuery()
-                ? pdlPolicyService.queryByName(policyName, context.getContext())
-                : pdlPolicyService.executeByName(policyName, context.getContext());
     }
 }
