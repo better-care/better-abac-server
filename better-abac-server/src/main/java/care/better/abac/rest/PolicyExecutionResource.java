@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static care.better.abac.policy.execute.PolicyHelper.OAUTH2_TOKEN_ATTRIBUTE_EXTRACTOR;
 
@@ -72,6 +74,15 @@ public class PolicyExecutionResource {
     public EvaluationExpression executeByNameComplex(@PathVariable("name") String name, @RequestBody Map<String, Object> ctx) {
         log.debug("Executing policy {} with expression result, ctx={}", name, ctx);
         return pdlPolicyService.queryByName(name, createContext(ctx).getContext());
+    }
+
+    @RequestMapping(value = "/execute/name/{name}/expression/multi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
+                    consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<EvaluationExpression> executeMultiByNameComplex(@PathVariable("name") String name, @RequestBody List<Map<String, Object>> ctx) {
+        return ctx.stream().map(it -> {
+            log.debug("Executing policy {} with expression result, ctx={}", name, it);
+            return pdlPolicyService.queryByName(name, createContext(it).getContext());
+        }).collect(Collectors.toList());
     }
 
     private EvaluationContext createContext(Map<String, Object> ctx) {
