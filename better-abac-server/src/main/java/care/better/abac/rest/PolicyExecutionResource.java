@@ -5,6 +5,7 @@ import care.better.abac.policy.execute.evaluation.BooleanEvaluationExpression;
 import care.better.abac.policy.execute.evaluation.EvaluationContext;
 import care.better.abac.policy.execute.evaluation.EvaluationExpression;
 import care.better.abac.policy.service.PolicyService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +50,9 @@ public class PolicyExecutionResource {
     @Autowired(required = false)
     private SsoConfiguration sso;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @RequestMapping(value = "/execute/name/{name}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> executeByNameSimple(@PathVariable("name") String name, @RequestBody Map<String, Object> ctx) {
@@ -73,7 +77,16 @@ public class PolicyExecutionResource {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public EvaluationExpression executeByNameComplex(@PathVariable("name") String name, @RequestBody Map<String, Object> ctx) {
         log.debug("Executing policy {} with expression result, ctx={}", name, ctx);
-        return pdlPolicyService.queryByName(name, createContext(ctx).getContext());
+        EvaluationExpression result = pdlPolicyService.queryByName(name, createContext(ctx).getContext());
+        if (log.isTraceEnabled()) {
+            //noinspection OverlyBroadCatchBlock
+            try {
+                log.trace("Result of policy {} execution, ctx={}, result={}", name, ctx, objectMapper.writeValueAsString(result));
+            } catch (Exception e) {
+                log.trace("Result of policy {} execution, ctx={}, result cannot be serialized ({})", name, ctx, e.getMessage());
+            }
+        }
+        return result;
     }
 
     @RequestMapping(value = "/execute/name/{name}/expression/multi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
