@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Bostjan Lah
@@ -22,4 +23,7 @@ public interface PartyRepository extends CrudRepository<Party, Long>, QueryDslRe
 
     @Query("SELECT p FROM Party p JOIN p.type t JOIN p.externalIds i WHERE t.name = :type and i IN (:externalIds)")
     Party findByTypeAndExternalId(@Param("type") String type, @Param("externalIds") Collection<String> externalIds);
+
+    @Query("SELECT i FROM Party p JOIN p.type t JOIN p.externalIds i WHERE t.name = :type")
+    Set<String> findExternalIdsByType(@Param("type") String type);
 }

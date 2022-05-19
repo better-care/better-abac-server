@@ -109,3 +109,5 @@ create index xp_party_target on party_relation (target_id);
 create index xp_party_type on party_relation (relation_type_id);
 
 create index xp_party_multi on party_relation (source_id, relation_type_id, target_id);
+
+create index xp_p_type on party (type_id);

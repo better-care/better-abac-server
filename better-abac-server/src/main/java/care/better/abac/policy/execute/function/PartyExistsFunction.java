@@ -5,6 +5,7 @@ import care.better.abac.policy.execute.Executable;
 import care.better.abac.policy.execute.ExecutableFunction;
 import care.better.abac.policy.execute.evaluation.BooleanEvaluationExpression;
 import care.better.abac.policy.execute.evaluation.EvaluationExpression;
+import care.better.abac.policy.execute.evaluation.ResultSetEvaluationExpression;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,6 +25,8 @@ public class PartyExistsFunction extends ExecutableFunction {
 
     @Executable(type = Executable.Type.QUERY)
     public EvaluationExpression partyExistsQuery(String type, String name) {
-        return partyExistsEvaluate(type, name);
+        return Functions.isQueryParam(name)
+                ? ResultSetEvaluationExpression.create(partyRepository.findExternalIdsByType(type))
+                : partyExistsEvaluate(type, name);
     }
 }
