@@ -30,21 +30,27 @@ import java.util.function.Supplier;
 public class PDLPolicyService implements PolicyService {
     private static final Logger log = LogManager.getLogger(PDLPolicyService.class.getName());
 
-    private final ConcurrentMap<String, PolicyDefinition> policies = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, CachedPolicyDefinition> cachedPolicies = new ConcurrentHashMap<>();
 
     private final PolicyHelper policyHelper;
     private final PolicyRepository policyRepository;
     private final PolicyExecutionAuditor policyExecutionAuditor;
-    
-    public PDLPolicyService(PolicyHelper policyHelper, PolicyRepository policyRepository, PolicyExecutionAuditor policyExecutionAuditor) {
+    private final long policyRefreshPeriodInMs;
+
+    public PDLPolicyService(
+            PolicyHelper policyHelper,
+            PolicyRepository policyRepository,
+            PolicyExecutionAuditor policyExecutionAuditor,
+            long policyRefreshPeriodInMs) {
         this.policyHelper = policyHelper;
         this.policyRepository = policyRepository;
         this.policyExecutionAuditor = policyExecutionAuditor;
+        this.policyRefreshPeriodInMs = policyRefreshPeriodInMs;
     }
 
     @Override
     public EvaluationExpression executeByName(String name, Map<String, Object> ctx) {
-        log.debug("Excuting policy: {}.", name);
+        log.debug("Executing policy: {}.", name);
         return execute(ctx, () -> getPolicyDefinition(name));
     }
 
@@ -56,7 +62,7 @@ public class PDLPolicyService implements PolicyService {
 
     @Override
     public void policyUpdated(String name, boolean refresh) {
-        policies.remove(name);
+        cachedPolicies.remove(name);
         if (refresh)
         {
             getPolicyDefinition(name);
@@ -64,17 +70,25 @@ public class PDLPolicyService implements PolicyService {
     }
 
     private PolicyDefinition getPolicyDefinition(String name) {
-        return policies.computeIfAbsent(name, x -> {
+        return cachedPolicies.compute(name, (x, existing) -> {
+            if (existing != null && existing.isNotOlderThan(policyRefreshPeriodInMs)) {
+                return existing;
+            }
+
             Policy policy = policyRepository.findByName(name);
             if (policy == null) {
                 throw new PolicyNotFoundException(String.format("Policy '%s' not found!", name));
             }
+            if (existing != null && existing.isOfVersion(policy.getVersion())) {
+                return new CachedPolicyDefinition(policy.getVersion(), existing.getPolicyDefinition());
+            }
+
             PolicyLexer lexer = new PolicyLexer(new ANTLRInputStream(policy.getPolicy()));
             PolicyParser parser = new PolicyParser(new CommonTokenStream(lexer));
 
             ConvertingPolicyVisitor convertingPolicyVisitor = new ConvertingPolicyVisitor();
-            return convertingPolicyVisitor.convert(parser.policy());
-        });
+            return new CachedPolicyDefinition(policy.getVersion(), convertingPolicyVisitor.convert(parser.policy()));
+        }).getPolicyDefinition();
     }
 
     private EvaluationExpression execute(Map<String, Object> ctx, Supplier<PolicyDefinition> policyDefinitionSupplier) {

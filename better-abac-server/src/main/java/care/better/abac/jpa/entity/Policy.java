@@ -32,6 +32,10 @@ public class Policy {
         return id;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
     public String getName() {
         return name;
     }

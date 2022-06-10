@@ -41,6 +41,7 @@ spring.security.oauth2.client.provider.oauth2.token-uri=https://localhost:8202/a
 async.rest.base-callback-url=http://localhost:8080/
 
 # Enable external validation
+abac.policyRefreshPeriodInMs=5000
 abac.configValidationEnabled=true
 spring.datasource.hikari.register-mbeans=true
 

@@ -10,6 +10,7 @@ import care.better.abac.policy.execute.function.Functions;
 import care.better.abac.policy.service.PolicyService;
 import care.better.abac.policy.service.impl.PDLPolicyService;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +33,8 @@ public class PolicyConfiguration {
     public PolicyService policyService(
             @NonNull PolicyHelper policyHelper,
             @NonNull PolicyRepository policyRepository,
-            @NonNull PolicyExecutionAuditor policyExecutionAuditor) {
-        return new PDLPolicyService(policyHelper, policyRepository, policyExecutionAuditor);
+            @NonNull PolicyExecutionAuditor policyExecutionAuditor,
+            @Value("${abac.policyRefreshPeriodInMs:5000}") long policyRefreshPeriodInMs) {
+        return new PDLPolicyService(policyHelper, policyRepository, policyExecutionAuditor, policyRefreshPeriodInMs);
     }
 }
