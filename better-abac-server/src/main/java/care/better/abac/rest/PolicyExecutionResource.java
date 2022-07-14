@@ -102,7 +102,7 @@ public class PolicyExecutionResource {
         EvaluationContext context = new EvaluationContext(ctx);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
-            if (!context.isQueryValue(EvaluationContext.USER_KEY)) {
+            if (!context.getContext().containsKey(EvaluationContext.USER_KEY)) {
                 context.setContextValue(EvaluationContext.USER_KEY, authentication.getName());
             }
             if (sso != null) {
