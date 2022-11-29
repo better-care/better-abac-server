@@ -25,7 +25,7 @@ import java.time.OffsetDateTime;
                 @Index(name = "xp_party_multi", columnList = "source_id, relation_type_id, target_id")
         }
 )
-public class PartyRelation {
+public class PartyRelation implements EntityWithId {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -47,12 +47,17 @@ public class PartyRelation {
     public PartyRelation() {
     }
 
+    public PartyRelation(Long id) {
+        this.id = id;
+    }
+
     public PartyRelation(Party source, Party target, RelationType relationType) {
         this.target = target;
         this.relationType = relationType;
         this.source = source;
     }
 
+    @Override
     public Long getId() {
         return id;
     }

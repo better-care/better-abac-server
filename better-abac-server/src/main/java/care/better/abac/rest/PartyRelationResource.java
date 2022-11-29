@@ -1,10 +1,9 @@
 package care.better.abac.rest;
 
 import care.better.abac.dto.PartyRelationDto;
-import care.better.abac.exception.PartyRelationInvalidTypesException;
 import care.better.abac.jpa.entity.PartyRelation;
-import care.better.abac.jpa.entity.PartyType;
 import care.better.abac.jpa.repo.PartyRelationRepository;
+import care.better.abac.jpa.repo.PartyRelationValidator;
 import care.better.abac.jpa.repo.PartyRepository;
 import care.better.abac.jpa.repo.RelationTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,6 @@ public class PartyRelationResource {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional(readOnly = true)
     public List<PartyRelationDto> findAll() {
         return StreamSupport.stream(partyRelationRepository.findAll().spliterator(), false)
                 .map(this::map)
@@ -56,7 +54,6 @@ public class PartyRelationResource {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional(readOnly = true)
     public ResponseEntity<PartyRelationDto> findOne(@PathVariable("id") Long id) {
         return partyRelationRepository.findById(id)
                 .map(this::map).map(ResponseEntity::ok)
@@ -68,7 +65,7 @@ public class PartyRelationResource {
     public ResponseEntity<PartyRelationDto> create(@RequestBody PartyRelationDto dto) {
         PartyRelation partyRelation = new PartyRelation();
         map(dto, partyRelation);
-        validate(partyRelation);
+        PartyRelationValidator.validate(partyRelation);
         PartyRelation saved = partyRelationRepository.save(partyRelation);
         return ResponseEntity.created(linkTo(methodOn(PartyRelationResource.class).findOne(saved.getId())).toUri()).body(map(saved));
     }
@@ -76,35 +73,18 @@ public class PartyRelationResource {
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<PartyRelationDto> update(@PathVariable("id") Long id, @RequestBody PartyRelationDto dto) {
-        return partyRelationRepository.findById(id).map(entity -> {
-                    map(dto, entity);
-                    validate(entity);
-                    return ResponseEntity.ok(map(entity));
-                })
-                .orElseGet(ResponseEntity.notFound()::build);
+        PartyRelation partyRelation = new PartyRelation();
+        map(dto, partyRelation);
+        return partyRelationRepository.update(id, partyRelation).map(entity -> ResponseEntity.ok(map(entity))).orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @Transactional
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         try {
             partyRelationRepository.deleteById(id);
             return ResponseEntity.ok().build();
         } catch (EmptyResultDataAccessException ignored) {
             return ResponseEntity.notFound().build();
-        }
-    }
-
-    private void validate(PartyRelation partyRelation) {
-        PartyType allowedSource = partyRelation.getRelationType().getAllowedSource();
-        if (allowedSource != null && !allowedSource.equals(partyRelation.getSource().getType())) {
-            throw new PartyRelationInvalidTypesException(
-                    "Invalid source party type: " + partyRelation.getSource().getType().getName() + ", allowed type: " + allowedSource.getName() + '!');
-        }
-        PartyType allowedTarget = partyRelation.getRelationType().getAllowedTarget();
-        if (allowedTarget != null && !allowedTarget.equals(partyRelation.getTarget().getType())) {
-            throw new PartyRelationInvalidTypesException(
-                    "Invalid target party type: " + partyRelation.getTarget().getType().getName() + ", allowed type: " + allowedTarget.getName() + '!');
         }
     }
 

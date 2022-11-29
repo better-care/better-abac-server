@@ -1,0 +1,96 @@
+{
+  "init": {
+    "partyTypes": [
+      {"name": "CARE_HOME"},
+      {"name": "USER"}
+    ],
+    "parties": [
+      {"type": "CARE_HOME", "externalIds": ["Sherwood Grange", "d1b6a87a-58f2-462d-8a49-30c723e8cdbc"]},
+      {"type": "CARE_HOME", "externalIds": ["Brook House"]},
+      {"type": "CARE_HOME", "externalIds": ["83faafb7-4a29-4c72-b447-153f99b06885"]},
+      {"type": "USER", "externalIds": ["Bobby Walsh", "b88e57aa-a3d0-42a5-9c64-8c1a04a34ebf"]},
+      {"type": "USER", "externalIds": ["Lydia Wallace"]},
+      {"type": "USER", "externalIds": ["Nathaniel Gordon", "9fd9628c-636f-4fac-ae40-a6b16d4e8421"]},
+      {"type": "USER", "externalIds": ["Jane Smith"]},
+      {"type": "USER", "externalIds": ["e92666bb-040c-4e6a-90a1-771f4ecce6ff"]}
+    ],
+    "relationTypes": [
+      {"name": "IS_MANAGER_OF", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "CARE_HOME"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "USER", "externalIds": ["Jane Smith"]},
+        "relationType": "IS_MANAGER_OF",
+        "target": {"type": "CARE_HOME", "externalIds": ["Brook House"]}
+      }
+    ]
+  },
+  "submitInput": {
+    "partyTypes": [
+      {"name": "CARE_HOME"},
+      {"name": "USER"}
+    ],
+    "parties": [
+      {"type": "CARE_HOME", "externalIds": ["Sherwood Grange", "d1b6a87a-58f2-462d-8a49-30c723e8cdbc"]},
+      {"type": "CARE_HOME", "externalIds": ["Brook House", "35763b30-01e8-42c9-ae0c-30e05646003c"]},
+      {"type": "CARE_HOME", "externalIds": ["Cheverton Lodge", "83faafb7-4a29-4c72-b447-153f99b06885"]},
+      {"type": "USER", "externalIds": ["Bobby Walsh"]},
+      {"type": "USER", "externalIds": ["Lydia Wallace"]},
+      {"type": "USER", "externalIds": ["Jane Smith"]},
+      {"type": "USER", "externalIds": ["e92666bb-040c-4e6a-90a1-771f4ecce6ff"]}
+    ],
+    "relationTypes": [
+      {"name": "IS_MANAGER_OF", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "CARE_HOME"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "USER", "externalIds": ["Jane Smith"]},
+        "relationType": "IS_MANAGER_OF",
+        "target": {"type": "CARE_HOME", "externalIds": ["Brook House", "35763b30-01e8-42c9-ae0c-30e05646003c"]}
+      }
+    ]
+  },
+  "resultAll": {
+    "partyTypes": [
+      {"state": "UNMODIFIED", "submittedValue": {"name": "CARE_HOME"}},
+      {"state": "UNMODIFIED", "submittedValue": {"name": "USER"}}
+    ],
+    "parties": [
+      {"state": "UNMODIFIED", "submittedValue": {"type": "CARE_HOME", "externalIds": ["Sherwood Grange", "d1b6a87a-58f2-462d-8a49-30c723e8cdbc"]}},
+      {"state": "DELETED", "previousValue": {"type": "CARE_HOME", "externalIds": ["Brook House"]}},
+      {"state": "CREATED", "submittedValue": {"type": "CARE_HOME", "externalIds": ["Brook House", "35763b30-01e8-42c9-ae0c-30e05646003c"]}},
+      {"state": "DELETED", "previousValue": {"type": "CARE_HOME", "externalIds": ["83faafb7-4a29-4c72-b447-153f99b06885"]}},
+      {"state": "CREATED", "submittedValue": {"type": "CARE_HOME", "externalIds": ["Cheverton Lodge", "83faafb7-4a29-4c72-b447-153f99b06885"]}},
+      {"state": "DELETED", "previousValue": {"type": "USER", "externalIds": ["Bobby Walsh", "b88e57aa-a3d0-42a5-9c64-8c1a04a34ebf"]}},
+      {"state": "CREATED", "submittedValue": {"type": "USER", "externalIds": ["Bobby Walsh"]}},
+      {"state": "UNMODIFIED", "submittedValue": {"type": "USER", "externalIds": ["Lydia Wallace"]}},
+      {"state": "DELETED", "previousValue": {"type": "USER", "externalIds": ["Nathaniel Gordon", "9fd9628c-636f-4fac-ae40-a6b16d4e8421"]}},
+      {"state": "UNMODIFIED", "submittedValue": {"type": "USER", "externalIds": ["Jane Smith"]}},
+      {"state": "UNMODIFIED", "submittedValue": {"type": "USER", "externalIds": ["e92666bb-040c-4e6a-90a1-771f4ecce6ff"]}}
+    ],
+    "relationTypes": [
+      {
+        "state": "UNMODIFIED",
+        "submittedValue": {"name": "IS_MANAGER_OF", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "CARE_HOME"}
+      }
+    ],
+    "partyRelations": [
+      {
+        "state": "DELETED",
+        "previousValue": {
+          "source": {"type": "USER", "externalIds": ["Jane Smith"]},
+          "relationType": "IS_MANAGER_OF",
+          "target": {"type": "CARE_HOME", "externalIds": ["Brook House"]}
+        }
+      },
+      {
+        "state": "CREATED",
+        "submittedValue": {
+          "source": {"type": "USER", "externalIds": ["Jane Smith"]},
+          "relationType": "IS_MANAGER_OF",
+          "target": {"type": "CARE_HOME", "externalIds": ["Brook House", "35763b30-01e8-42c9-ae0c-30e05646003c"]}
+        }
+      }
+    ]
+  }
+}

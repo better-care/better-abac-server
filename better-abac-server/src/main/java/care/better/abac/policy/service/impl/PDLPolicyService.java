@@ -11,7 +11,7 @@ import care.better.abac.policy.definition.PolicyDefinition;
 import care.better.abac.policy.execute.PolicyExecutionContext;
 import care.better.abac.policy.execute.PolicyHelper;
 import care.better.abac.policy.execute.evaluation.EvaluationExpression;
-import care.better.abac.policy.service.PolicyService;
+import care.better.abac.policy.service.PolicyExecutionService;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  * @author Bostjan Lah
  */
 
-public class PDLPolicyService implements PolicyService {
+public class PDLPolicyService implements PolicyExecutionService {
     private static final Logger log = LogManager.getLogger(PDLPolicyService.class.getName());
 
     private final ConcurrentMap<String, CachedPolicyDefinition> cachedPolicies = new ConcurrentHashMap<>();

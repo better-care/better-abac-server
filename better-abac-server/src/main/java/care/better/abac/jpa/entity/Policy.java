@@ -14,7 +14,7 @@ import javax.persistence.Version;
  * @author Bostjan Lah
  */
 @Entity
-public class Policy {
+public class Policy implements EntityWithId, Named {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -28,6 +28,14 @@ public class Policy {
     @Column(nullable = false)
     private String policy;
 
+    public Policy() {
+    }
+
+    public Policy(Long id) {
+        this.id = id;
+    }
+
+    @Override
     public Long getId() {
         return id;
     }
@@ -36,6 +44,7 @@ public class Policy {
         return version;
     }
 
+    @Override
     public String getName() {
         return name;
     }

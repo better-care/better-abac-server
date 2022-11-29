@@ -1,0 +1,306 @@
+{
+  "init": {
+    "partyTypes": [
+      {"name": "FORM"},
+      {"name": "TEMPLATE"},
+      {"name": "ROLE"},
+      {"name": "USER"}
+    ],
+    "parties": [
+      {"type": "FORM", "externalIds": ["Personal information"]},
+      {"type": "FORM", "externalIds": ["Advance decisions and statements"]},
+      {"type": "FORM", "externalIds": ["Alerts"]},
+      {"type": "FORM", "externalIds": ["Emergency care and treatment plan"]},
+      {"type": "TEMPLATE", "externalIds": ["About me"]},
+      {"type": "TEMPLATE", "externalIds": ["Emergency contacts"]},
+      {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+      {"type": "ROLE", "externalIds": ["CLINICIAN"]},
+      {"type": "USER", "externalIds": ["Erik Thomson"]},
+      {"type": "USER", "externalIds": ["Jane Smith"]}
+    ],
+    "relationTypes": [
+      {"name": "HAS_TEMPLATE", "allowedSourcePartyType": "FORM", "allowedTargetPartyType": "TEMPLATE"},
+      {"name": "CAN_VIEW_EXACTLY", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "USER"},
+      {"name": "CAN_VIEW", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_CREATE", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_DELETE", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_BE_CREATED", "allowedSourcePartyType": "TEMPLATE", "allowedTargetPartyType": "ROLE"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "FORM", "externalIds": ["Personal information"]},
+        "relationType": "HAS_TEMPLATE",
+        "target": {"type": "TEMPLATE", "externalIds": ["About me"]}
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Advance decisions and statements"]}
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_CREATE",
+        "target": {"type": "FORM", "externalIds": ["Advance decisions and statements"]}
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Personal information"]},
+        "validUntil": "2022-01-01T01:00:00Z"
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Alerts"]},
+        "validUntil": "2025-01-01T01:00:00Z"
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Emergency care and treatment plan"]}
+      },
+      {
+        "source": {"type": "USER", "externalIds": ["Erik Thomson"]},
+        "relationType": "CAN_VIEW_EXACTLY",
+        "target": {"type": "USER", "externalIds": ["Jane Smith"]}
+      }
+    ],
+    "policies": [
+      {"name": "policy_100", "policy": "hasRelation(ctx.user, 'RELATION_100', ctx.patient)"},
+      {"name": "policy_200", "policy": "hasRelation(ctx.user, 'RELATION_200', ctx.patient)"},
+      {"name": "policy_300", "policy": "hasRelation(ctx.user, 'RELATION_300', ctx.patient)"}
+    ]
+  },
+  "excludedFromSync": {
+    "partyTypes": [
+      {"name": "USER"}
+    ],
+    "parties": [
+      {"type": "USER", "externalIds": ["Erik Thomson"]},
+      {"type": "USER", "externalIds": ["Jane Smith"]}
+    ],
+    "relationTypes": [
+      {"name": "CAN_VIEW_EXACTLY", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "USER"},
+      {"name": "CAN_CREATE", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_CREATE",
+        "target": {"type": "FORM", "externalIds": ["Advance decisions and statements"]}
+      },
+      {
+        "source": {"type": "USER", "externalIds": ["Erik Thomson"]},
+        "relationType": "CAN_VIEW_EXACTLY",
+        "target": {"type": "USER", "externalIds": ["Jane Smith"]}
+      }
+    ]
+  },
+  "submitInput": {
+    "partyTypes": [
+      {"name": "FORM"},
+      {"name": "TEMPLATE"},
+      {"name": "ROLE"},
+      {"name": "ORGANISATION"},
+      {"name": "PATIENT"}
+    ],
+    "parties": [
+      {"type": "FORM", "externalIds": ["Personal information"]},
+      {"type": "FORM", "externalIds": ["Advance decisions and statements"]},
+      {"type": "FORM", "externalIds": ["Medications and allergies"]},
+      {"type": "FORM", "externalIds": ["Alerts"]},
+      {"type": "FORM", "externalIds": ["Emergency care and treatment plan"]},
+      {"type": "TEMPLATE", "externalIds": ["About me"]},
+      {"type": "TEMPLATE", "externalIds": ["Urgent Care plan"]},
+      {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+      {"type": "ROLE", "externalIds": ["CLERICAL"]},
+      {"type": "ORGANISATION", "externalIds": ["Better"]},
+      {"type": "PATIENT", "externalIds": ["John De Veer"]}
+    ],
+    "relationTypes": [
+      {"name": "HAS_TEMPLATE", "allowedSourcePartyType": "FORM", "allowedTargetPartyType": "TEMPLATE"},
+      {"name": "CAN_VIEW", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_DRAFT", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_DELETE", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_BE_CREATED", "allowedSourcePartyType": "FORM", "allowedTargetPartyType": "ROLE"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "FORM", "externalIds": ["Advance decisions and statements"]},
+        "relationType": "HAS_TEMPLATE",
+        "target": {"type": "TEMPLATE", "externalIds": ["About me"]}
+      },
+      {
+        "source": {"type": "FORM", "externalIds": ["Personal information"]},
+        "relationType": "HAS_TEMPLATE",
+        "target": {"type": "TEMPLATE", "externalIds": ["Urgent Care plan"]}
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Advance decisions and statements"]},
+        "validUntil": "2025-01-01T01:00:00Z"
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Personal information"]},
+        "validUntil": "2025-01-01T01:00:00Z"
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Alerts"]},
+        "validUntil": "2025-01-01T01:00:00Z"
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Emergency care and treatment plan"]}
+      }
+    ],
+    "policies": [
+      {"name": "policy_100", "policy": "hasRelation(ctx.user, 'RELATION_100', ctx.patient)"},
+      {"name": "policy_200", "policy": "hasRelation(ctx.user, 'RELATION_201', ctx.patient)"},
+      {"name": "policy_400", "policy": "hasRelation(ctx.user, 'RELATION_400', ctx.patient)"}
+    ]
+  },
+  "resultAll": {
+    "partyTypes": [
+      {"state": "UNMODIFIED", "submittedValue": {"name": "FORM"}},
+      {"state": "UNMODIFIED", "submittedValue": {"name": "TEMPLATE"}},
+      {"state": "UNMODIFIED", "submittedValue": {"name": "ROLE"}},
+      {"state": "CREATED", "submittedValue": {"name": "ORGANISATION"}},
+      {"state": "CREATED", "submittedValue": {"name": "PATIENT"}}
+    ],
+    "parties": [
+      {"state": "UNMODIFIED", "submittedValue": {"type": "FORM", "externalIds": ["Personal information"]}},
+      {"state": "UNMODIFIED", "submittedValue": {"type": "FORM", "externalIds": ["Alerts"]}},
+      {"state": "UNMODIFIED", "submittedValue": {"type": "FORM", "externalIds": ["Emergency care and treatment plan"]}},
+      {"state": "UNMODIFIED", "submittedValue": {"type": "FORM", "externalIds": ["Advance decisions and statements"]}},
+      {"state": "CREATED", "submittedValue": {"type": "FORM", "externalIds": ["Medications and allergies"]}},
+      {"state": "UNMODIFIED", "submittedValue": {"type": "TEMPLATE", "externalIds": ["About me"]}},
+      {"state": "DELETED", "previousValue": {"type": "TEMPLATE", "externalIds": ["Emergency contacts"]}},
+      {"state": "CREATED", "submittedValue": {"type": "TEMPLATE", "externalIds": ["Urgent Care plan"]}},
+      {"state": "DELETED", "previousValue": {"type": "ROLE", "externalIds": ["CLINICIAN"]}},
+      {"state": "UNMODIFIED", "submittedValue": {"type": "ROLE", "externalIds": ["URGENT_CARE"]}},
+      {"state": "CREATED", "submittedValue": {"type": "ROLE", "externalIds": ["CLERICAL"]}},
+      {"state": "CREATED", "submittedValue": {"type": "ORGANISATION", "externalIds": ["Better"]}},
+      {"state": "CREATED", "submittedValue": {"type": "PATIENT", "externalIds": ["John De Veer"]}}
+    ],
+    "relationTypes": [
+      {
+        "state": "UNMODIFIED",
+        "submittedValue": {"name": "HAS_TEMPLATE", "allowedSourcePartyType": "FORM", "allowedTargetPartyType": "TEMPLATE"}
+      },
+      {
+        "state": "UNMODIFIED",
+        "submittedValue": {"name": "CAN_VIEW", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"}
+      },
+      {
+        "state": "UNMODIFIED",
+        "submittedValue": {"name": "CAN_DELETE", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"}
+      },
+      {
+        "state": "CREATED",
+        "submittedValue": {"name": "CAN_DRAFT", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"}
+      },
+      {
+        "state": "UPDATED",
+        "submittedValue": {"name": "CAN_BE_CREATED", "allowedSourcePartyType": "FORM", "allowedTargetPartyType": "ROLE"},
+        "previousValue": {"name": "CAN_BE_CREATED", "allowedSourcePartyType": "TEMPLATE", "allowedTargetPartyType": "ROLE"}
+      }
+    ],
+    "partyRelations": [
+      {
+        "state": "DELETED",
+        "previousValue": {
+          "source": {"type": "FORM", "externalIds": ["Personal information"]},
+          "relationType": "HAS_TEMPLATE",
+          "target": {"type": "TEMPLATE", "externalIds": ["About me"]}
+        }
+      },
+      {
+        "state": "CREATED",
+        "submittedValue": {
+          "source": {"type": "FORM", "externalIds": ["Advance decisions and statements"]},
+          "relationType": "HAS_TEMPLATE",
+          "target": {"type": "TEMPLATE", "externalIds": ["About me"]}
+        }
+      },
+      {
+        "state": "CREATED",
+        "submittedValue": {
+          "source": {"type": "FORM", "externalIds": ["Personal information"]},
+          "relationType": "HAS_TEMPLATE",
+          "target": {"type": "TEMPLATE", "externalIds": ["Urgent Care plan"]}
+        }
+      },
+      {
+        "state": "UPDATED",
+        "submittedValue": {
+          "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+          "relationType": "CAN_VIEW",
+          "target": {"type": "FORM", "externalIds": ["Advance decisions and statements"]},
+          "validUntil": "2025-01-01T01:00:00Z"
+        },
+        "previousValue": {
+          "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+          "relationType": "CAN_VIEW",
+          "target": {"type": "FORM", "externalIds": ["Advance decisions and statements"]}
+        }
+      },
+      {
+        "state": "UPDATED",
+        "submittedValue": {
+          "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+          "relationType": "CAN_VIEW",
+          "target": {"type": "FORM", "externalIds": ["Personal information"]},
+          "validUntil": "2025-01-01T01:00:00Z"
+        },
+        "previousValue": {
+          "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+          "relationType": "CAN_VIEW",
+          "target": {"type": "FORM", "externalIds": ["Personal information"]},
+          "validUntil": "2022-01-01T01:00:00Z"
+        }
+      },
+      {
+        "state": "UNMODIFIED",
+        "submittedValue": {
+          "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+          "relationType": "CAN_VIEW",
+          "target": {"type": "FORM", "externalIds": ["Alerts"]},
+          "validUntil": "2025-01-01T01:00:00Z"
+        }
+      },
+      {
+        "state": "UNMODIFIED",
+        "submittedValue": {
+          "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+          "relationType": "CAN_VIEW",
+          "target": {"type": "FORM", "externalIds": ["Emergency care and treatment plan"]}
+        }
+      }
+    ],
+    "policies": [
+      {
+        "state": "UNMODIFIED",
+        "submittedValue": {"name": "policy_100", "policy": "hasRelation(ctx.user, 'RELATION_100', ctx.patient)"}
+      },
+      {
+        "state": "UPDATED",
+        "submittedValue": {"name": "policy_200", "policy": "hasRelation(ctx.user, 'RELATION_201', ctx.patient)"},
+        "previousValue": {"name": "policy_200", "policy": "hasRelation(ctx.user, 'RELATION_200', ctx.patient)"}
+      },
+      {
+        "state": "DELETED",
+        "previousValue": {"name": "policy_300", "policy": "hasRelation(ctx.user, 'RELATION_300', ctx.patient)"}
+      },
+      {
+        "state": "CREATED",
+        "submittedValue": {"name": "policy_400", "policy": "hasRelation(ctx.user, 'RELATION_400', ctx.patient)"}
+      }
+    ]
+  }
+}

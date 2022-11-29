@@ -18,7 +18,7 @@ import java.util.Set;
  * @author Bostjan Lah
  */
 @Entity
-public class PartyType {
+public class PartyType implements EntityWithId, Named {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -42,10 +42,12 @@ public class PartyType {
         this.id = id;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public String getName() {
         return name;
     }

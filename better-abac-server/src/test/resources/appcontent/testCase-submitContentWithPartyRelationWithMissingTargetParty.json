@@ -1,0 +1,53 @@
+{
+  "init": {
+    "partyTypes": [
+      {"name": "FORM"},
+      {"name": "ROLE"}
+    ],
+    "parties": [
+      {"type": "FORM", "externalIds": ["Personal information"]},
+      {"type": "ROLE", "externalIds": ["CLINICIAN"]},
+      {"type": "ROLE", "externalIds": ["URGENT_CARE"]}
+    ],
+    "relationTypes": [
+      {"name": "CAN_VIEW", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_DELETE", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Personal information"]}
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["CLINICIAN"]},
+        "relationType": "CAN_DELETE",
+        "target": {"type": "FORM", "externalIds": ["Personal information"]}
+      }
+    ],
+    "policies": [
+      {"name": "policy_100", "policy": "hasRelation(ctx.user, 'RELATION_100', ctx.patient)"}
+    ]
+  },
+  "submitInput": {
+    "partyTypes": [
+      {"name": "FORM"},
+      {"name": "ROLE"}
+    ],
+    "parties": [
+      {"type": "FORM", "externalIds": ["About me"]},
+      {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+      {"type": "ROLE", "externalIds": ["CLINICIAN"]}
+    ],
+    "relationTypes": [
+      {"name": "CAN_VIEW", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Personal information"]}
+      }
+    ]
+  }
+}

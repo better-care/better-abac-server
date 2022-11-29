@@ -1,0 +1,62 @@
+{
+  "content": {
+    "partyTypes": [
+      {"name": "FORM"},
+      {"name": "TEMPLATE"},
+      {"name": "ROLE"},
+      {"name": "USER"}
+    ],
+    "parties": [
+      {"type": "FORM", "externalIds": ["Personal information"]},
+      {"type": "FORM", "externalIds": ["Advance decisions and statements"]},
+      {"type": "FORM", "externalIds": ["Alerts"]},
+      {"type": "FORM", "externalIds": ["Emergency care and treatment plan"]},
+      {"type": "TEMPLATE", "externalIds": ["About me"]},
+      {"type": "TEMPLATE", "externalIds": ["Emergency contacts"]},
+      {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+      {"type": "ROLE", "externalIds": ["CLINICIAN"]},
+      {"type": "USER", "externalIds": ["Jane Smith"]}
+    ],
+    "relationTypes": [
+      {"name": "HAS_TEMPLATE", "allowedSourcePartyType": "FORM", "allowedTargetPartyType": "TEMPLATE"},
+      {"name": "CAN_VIEW", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_CREATE", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_DELETE", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_BE_CREATED", "allowedSourcePartyType": "TEMPLATE", "allowedTargetPartyType": "ROLE"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "FORM", "externalIds": ["Personal information"]},
+        "relationType": "HAS_TEMPLATE",
+        "target": {"type": "TEMPLATE", "externalIds": ["About me"]}
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Advance decisions and statements"]}
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Personal information"]},
+        "validUntil": "2022-01-01T01:00:00Z"
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Alerts"]},
+        "validUntil": "2025-01-01T01:00:00Z"
+      },
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Emergency care and treatment plan"]}
+      }
+    ],
+    "policies": [
+      {"name": "policy_100", "policy": "hasRelation(ctx.user, 'RELATION_100', ctx.patient)"},
+      {"name": "policy_200", "policy": "hasRelation(ctx.user, 'RELATION_200', ctx.patient)"},
+      {"name": "policy_300", "policy": "hasRelation(ctx.user, 'RELATION_300', ctx.patient)"}
+    ]
+  }
+}

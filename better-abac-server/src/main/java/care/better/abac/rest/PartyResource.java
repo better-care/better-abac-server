@@ -37,7 +37,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 @RestController
 @RequestMapping("/rest/v1/admin/party")
-@Transactional
 public class PartyResource {
     private final PartyTypeRepository partyTypeRepository;
     private final PartyRepository partyRepository;
@@ -86,6 +85,7 @@ public class PartyResource {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ResponseEntity<PartyDto> create(@RequestBody PartyDto dto) {
         Party party = new Party();
         map(dto, party);
@@ -95,11 +95,12 @@ public class PartyResource {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ResponseEntity<PartyDto> update(@PathVariable("id") Long id, @RequestBody PartyDto dto) {
-        return partyRepository.findById(id).map(entity -> {
-                    map(dto, entity);
-                    return ResponseEntity.ok(map(entity));
-                })
+        Party party = new Party();
+        map(dto, party);
+        return partyRepository.update(id, party)
+                .map(entity -> ResponseEntity.ok(map(entity)))
                 .orElseGet(ResponseEntity.notFound()::build);
     }
 

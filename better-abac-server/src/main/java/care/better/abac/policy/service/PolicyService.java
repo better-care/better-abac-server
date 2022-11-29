@@ -1,18 +1,16 @@
 package care.better.abac.policy.service;
 
-import care.better.abac.policy.execute.evaluation.EvaluationExpression;
+import care.better.abac.jpa.EntityCrudService;
+import care.better.abac.jpa.entity.Policy;
 
-import java.util.Map;
+import java.util.Set;
 
 /**
- * @author Bostjan Lah
+ * @author Matic Ribic
  */
-public interface PolicyService {
-    EvaluationExpression executeByName(String name, Map<String, Object> ctx);
-    EvaluationExpression queryByName(String name, Map<String, Object> ctx);
-    default void policyUpdated(String name)
-    {
-        policyUpdated(name, false);
-    }
-    void policyUpdated(String name, boolean refresh);
+public interface PolicyService extends EntityCrudService<Policy> {
+
+    Iterable<Policy> findAll();
+
+    void registerPolicySync(Set<String> policyNames, boolean refresh);
 }

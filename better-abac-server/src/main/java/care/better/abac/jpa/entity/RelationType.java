@@ -15,7 +15,7 @@ import javax.persistence.Version;
  * @author Bostjan Lah
  */
 @Entity
-public class RelationType {
+public class RelationType implements EntityWithId, Named {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -39,10 +39,12 @@ public class RelationType {
         this.id = id;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public String getName() {
         return name;
     }

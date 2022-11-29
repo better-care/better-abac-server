@@ -1,0 +1,42 @@
+{
+  "init": {
+    "partyTypes": [
+      {"name": "CARE_HOME"},
+      {"name": "USER"}
+    ],
+    "parties": [
+      {"type": "CARE_HOME", "externalIds": ["Brook House"]},
+      {"type": "USER", "externalIds": ["Jane Smith"]}
+    ],
+    "relationTypes": [
+      {"name": "IS_MANAGER_OF", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "CARE_HOME"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "USER", "externalIds": ["Jane Smith"]},
+        "relationType": "IS_MANAGER_OF",
+        "target": {"type": "CARE_HOME", "externalIds": ["Brook House"]}
+      }
+    ]
+  },
+  "submitInput": {
+    "partyTypes": [
+      {"name": "CARE_HOME"},
+      {"name": "USER"}
+    ],
+    "parties": [
+      {"type": "CARE_HOME", "externalIds": ["Brook House", "35763b30-01e8-42c9-ae0c-30e05646003c"]},
+      {"type": "USER", "externalIds": ["Jane Smith"]}
+    ],
+    "relationTypes": [
+      {"name": "IS_MANAGER_OF", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "CARE_HOME"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "USER", "externalIds": ["Jane Smith"]},
+        "relationType": "IS_MANAGER_OF",
+        "target": {"type": "CARE_HOME", "externalIds": ["Brook House"]}
+      }
+    ]
+  }
+}

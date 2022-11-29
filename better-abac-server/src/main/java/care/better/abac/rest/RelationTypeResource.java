@@ -30,7 +30,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 @RestController
 @RequestMapping("/rest/v1/admin/relationType")
-@Transactional
 public class RelationTypeResource {
     private final RelationTypeRepository relationTypeRepository;
     private final PartyTypeRepository partyTypeRepository;
@@ -63,37 +62,21 @@ public class RelationTypeResource {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ResponseEntity<RelationTypeDto> create(@RequestBody RelationTypeDto dto) {
         RelationType relationType = new RelationType();
-        relationType.setName(dto.getName());
-        if (dto.getAllowedSourcePartyType() != null) {
-            relationType.setAllowedSource(partyTypeRepository.findByName(dto.getAllowedSourcePartyType()));
-        }
-        if (dto.getAllowedTargetPartyType() != null) {
-            relationType.setAllowedTarget(partyTypeRepository.findByName(dto.getAllowedTargetPartyType()));
-        }
+        map(dto, relationType, true);
         RelationType saved = relationTypeRepository.save(relationType);
 
         return ResponseEntity.created(linkTo(methodOn(RelationTypeResource.class).findOne(saved.getId())).toUri()).body(map(saved));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ResponseEntity<RelationTypeDto> update(@PathVariable("id") Long id, @RequestBody RelationTypeDto dto) {
-        return relationTypeRepository.findById(id).map(entity -> {
-                    if (dto.getName() != null) {
-                        entity.setName(dto.getName());
-                    }
-                    if (dto.getAllowedSourcePartyType() != null) {
-                        entity.setAllowedSource(partyTypeRepository.findByName(dto.getAllowedSourcePartyType()));
-                    }
-                    if (dto.getAllowedTargetPartyType() != null) {
-                        entity.setAllowedTarget(partyTypeRepository.findByName(dto.getAllowedTargetPartyType()));
-                    }
-                    RelationType updated = relationTypeRepository.save(entity);
-
-                    return ResponseEntity.ok(map(updated));
-                })
-                .orElseGet(ResponseEntity.notFound()::build);
+        RelationType relationType = new RelationType();
+        map(dto, relationType, false);
+        return relationTypeRepository.update(id, relationType).map(entity -> ResponseEntity.ok(map(entity))).orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -103,6 +86,18 @@ public class RelationTypeResource {
             return ResponseEntity.ok().build();
         } catch (EmptyResultDataAccessException ignored) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    private void map(RelationTypeDto dto, RelationType relationType, boolean nameRequired) {
+        if (nameRequired || dto.getName() != null) {
+            relationType.setName(dto.getName());
+        }
+        if (dto.getAllowedSourcePartyType() != null) {
+            relationType.setAllowedSource(partyTypeRepository.findByName(dto.getAllowedSourcePartyType()));
+        }
+        if (dto.getAllowedTargetPartyType() != null) {
+            relationType.setAllowedTarget(partyTypeRepository.findByName(dto.getAllowedTargetPartyType()));
         }
     }
 

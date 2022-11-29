@@ -7,7 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * @author Bostjan Lah
  */
-//@RepositoryRestResource(path = "/policy")
 public interface PolicyRepository extends CrudRepository<Policy, Long>, QueryDslRepository<Policy, Long> {
     Policy findByName(String name);
 }

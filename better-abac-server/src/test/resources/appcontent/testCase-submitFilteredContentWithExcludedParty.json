@@ -1,0 +1,103 @@
+{
+  "init": {
+    "partyTypes": [
+      {"name": "FORM"},
+      {"name": "ROLE"},
+      {"name": "USER"}
+    ],
+    "parties": [
+      {"type": "FORM", "externalIds": ["Personal information"]},
+      {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+      {"type": "USER", "externalIds": ["Erik Thomson"]},
+      {"type": "USER", "externalIds": ["Jane Smith"]}
+    ],
+    "relationTypes": [
+      {"name": "CAN_VIEW", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"},
+      {"name": "CAN_VIEW_EXACTLY", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "USER"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Personal information"]}
+      },
+      {
+        "source": {"type": "USER", "externalIds": ["Erik Thomson"]},
+        "relationType": "CAN_VIEW_EXACTLY",
+        "target": {"type": "USER", "externalIds": ["Jane Smith"]}
+      }
+    ],
+    "policies": [
+      {"name": "policy_100", "policy": "hasRelation(ctx.user, 'RELATION_100', ctx.patient)"}
+    ]
+  },
+  "excludedFromSync": {
+    "partyTypes": [
+      {"name": "USER"}
+    ],
+    "parties": [
+      {"type": "USER", "externalIds": ["Erik Thomson"]},
+      {"type": "USER", "externalIds": ["Jane Smith"]}
+    ],
+    "relationTypes": [
+      {"name": "CAN_VIEW_EXACTLY", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "USER"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "USER", "externalIds": ["Erik Thomson"]},
+        "relationType": "CAN_VIEW_EXACTLY",
+        "target": {"type": "USER", "externalIds": ["Jane Smith"]}
+      }
+    ]
+  },
+  "submitInput": {
+    "partyTypes": [
+      {"name": "FORM"},
+      {"name": "ROLE"},
+      {"name": "TEMPLATE"}
+    ],
+    "parties": [
+      {"type": "FORM", "externalIds": ["About me"]},
+      {"type": "ROLE", "externalIds": ["CLINICIAN"]},
+      {"type": "USER", "externalIds": ["Henry King"]}
+    ],
+    "relationTypes": [
+      {"name": "CAN_VIEW", "allowedSourcePartyType": "FORM", "allowedTargetPartyType": "ROLE"},
+      {"name": "CAN_CREATE_EXACTLY", "allowedSourcePartyType": "USER", "allowedTargetPartyType": "USER"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "ROLE", "externalIds": ["CLINICIAN"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["About me"]}
+      }
+    ],
+    "policies": [
+      {"name": "policy_100", "policy": "hasRelation(ctx.user, 'RELATION_101', ctx.patient)"},
+      {"name": "policy_200", "policy": "hasRelation(ctx.user, 'RELATION_', ctx.patient)"}
+    ]
+  },
+  "contentAfterFailedSubmit": {
+    "partyTypes": [
+      {"name": "FORM"},
+      {"name": "ROLE"}
+    ],
+    "parties": [
+      {"type": "FORM", "externalIds": ["Personal information"]},
+      {"type": "ROLE", "externalIds": ["URGENT_CARE"]}
+    ],
+    "relationTypes": [
+      {"name": "CAN_VIEW", "allowedSourcePartyType": "ROLE", "allowedTargetPartyType": "FORM"}
+    ],
+    "partyRelations": [
+      {
+        "source": {"type": "ROLE", "externalIds": ["URGENT_CARE"]},
+        "relationType": "CAN_VIEW",
+        "target": {"type": "FORM", "externalIds": ["Personal information"]}
+      }
+    ],
+    "policies": [
+      {"name": "policy_100", "policy": "hasRelation(ctx.user, 'RELATION_100', ctx.patient)"}
+    ]
+  }
+}

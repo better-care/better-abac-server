@@ -3,6 +3,7 @@ package care.better.abac.rest;
 import care.better.abac.dto.PolicyDto;
 import care.better.abac.jpa.entity.Policy;
 import care.better.abac.jpa.repo.PolicyRepository;
+import care.better.abac.policy.service.PolicyExecutionService;
 import care.better.abac.policy.service.PolicyService;
 import care.better.core.Opt;
 import lombok.NonNull;
@@ -11,11 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -49,17 +49,18 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 @RestController
 @RequestMapping("/rest/v1/admin/policy")
-@Transactional
 public class PolicyResource {
     public static final String POLICY_FILE_EXTENSION = ".pdl";
 
     private final PolicyRepository policyRepository;
-    private final PolicyService pdlPolicyService;
+    private final PolicyExecutionService pdlPolicyService;
+    private final PolicyService policyService;
 
     @Autowired
-    public PolicyResource(@NonNull PolicyRepository policyRepository, @NonNull PolicyService pdlPolicyService) {
+    public PolicyResource(@NonNull PolicyRepository policyRepository, @NonNull PolicyExecutionService pdlPolicyService, @NonNull PolicyService policyService) {
         this.policyRepository = policyRepository;
         this.pdlPolicyService = pdlPolicyService;
+        this.policyService = policyService;
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -93,27 +94,19 @@ public class PolicyResource {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PolicyDto> update(@PathVariable("id") Long id, @RequestBody PolicyDto dto) {
-        return policyRepository.findById(id).map(entity -> {
-                    map(dto, entity);
-
-                    String policyName = entity.getName();
-                    registerPolicySync(Collections.singleton(policyName), true);
-
-                    return ResponseEntity.ok(map(entity));
-                })
-                .orElseGet(ResponseEntity.notFound()::build);
+        Policy policy = new Policy();
+        map(dto, policy);
+        return policyService.update(id, policy).map(entity -> ResponseEntity.ok(map(entity))).orElseGet(ResponseEntity.notFound()::build);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        return policyRepository.findById(id).map(entity -> {
-                    String policyName = entity.getName();
-
-                    policyRepository.delete(entity);
-                    registerPolicySync(Collections.singleton(policyName), false);
-                    return ResponseEntity.ok().<Void>build();
-                })
-                .orElseGet(ResponseEntity.notFound()::build);
+        try {
+            policyService.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (EmptyResultDataAccessException ignored) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @RequestMapping(value = "/export", method = RequestMethod.GET)

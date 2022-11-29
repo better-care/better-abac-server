@@ -1,5 +1,6 @@
 package care.better.abac.rest;
 
+import care.better.abac.exception.AppContentSyncException;
 import care.better.abac.exception.PartyRelationInvalidTypesException;
 import care.better.abac.exception.PolicyExecutionException;
 import care.better.abac.exception.PolicyNotFoundException;
@@ -44,6 +45,12 @@ public class AbacExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidationException.class)
     public ExceptionData handleValidationException(ValidationException exception) {
+        return new ExceptionData(exception);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(AppContentSyncException.class)
+    public ExceptionData handleAppContentValidationException(AppContentSyncException exception) {
         return new ExceptionData(exception);
     }
 }

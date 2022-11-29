@@ -4,7 +4,7 @@ import care.better.abac.oauth.SsoConfiguration;
 import care.better.abac.policy.execute.evaluation.BooleanEvaluationExpression;
 import care.better.abac.policy.execute.evaluation.EvaluationContext;
 import care.better.abac.policy.execute.evaluation.EvaluationExpression;
-import care.better.abac.policy.service.PolicyService;
+import care.better.abac.policy.service.PolicyExecutionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +45,7 @@ public class PolicyExecutionResource {
     private static final String ERROR_DESCRIPTION = "error_description";
 
     @Autowired
-    private PolicyService pdlPolicyService;
+    private PolicyExecutionService pdlPolicyService;
 
     @Autowired(required = false)
     private SsoConfiguration sso;

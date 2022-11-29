@@ -8,7 +8,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +28,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 @RestController
 @RequestMapping("/rest/v1/admin/partyType")
-@Transactional
 public class PartyTypeResource {
     private final PartyTypeRepository partyTypeRepository;
 
@@ -70,10 +68,10 @@ public class PartyTypeResource {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PartyTypeDto> update(@PathVariable("id") Long id, @RequestBody PartyTypeDto dto) {
-        return partyTypeRepository.findById(id).map(entity -> {
-                    entity.setName(dto.getName());
-                    return ResponseEntity.ok(map(entity));
-                })
+        PartyType partyType = new PartyType();
+        partyType.setName(dto.getName());
+        return partyTypeRepository.update(id, partyType)
+                .map(entity -> ResponseEntity.ok(map(entity)))
                 .orElseGet(ResponseEntity.notFound()::build);
     }
 

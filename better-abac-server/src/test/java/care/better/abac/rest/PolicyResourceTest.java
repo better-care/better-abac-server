@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -24,10 +23,10 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -54,18 +53,13 @@ import static org.junit.Assert.assertEquals;
 @EnableConfigurationProperties
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
 @AutoConfigureTestDatabase
-@TestPropertySource(properties = {"sso.enabled = false"})
-public class PolicyResourceTest {
-    private static final String BASE_URL = "/rest/v1/admin/policy";
-
-    @Autowired
-    private TestRestTemplate restTemplate;
+public class PolicyResourceTest extends AbstractResourceTest {
+    static final String BASE_URL = "/rest/v1/admin/policy";
 
     @Autowired
     private PolicyRepository policyRepository;
 
-    @Value("${local.server.port}")
-    private int serverPort;
+    private static final String DEFAULT_POLICY = "hasRelation(ctx.user, 'RELATION_4', ctx.patient)";
 
     @Test
     public void testPolicyExport() throws IOException {
@@ -122,6 +116,97 @@ public class PolicyResourceTest {
         validateAndDelete(dto);
         validateAndDelete(dto1);
         validateAndDelete(dto2);
+    }
+
+    @Test
+    public void createPolicy() {
+        // given
+        String name = "policy_123";
+
+        // when
+        PolicyDto createdDto = createEntity(BASE_URL, getPolicyDto(name));
+
+        // then
+        assertThat(createdDto.getName()).isEqualTo(name);
+        assertThat(createdDto.getPolicy()).isEqualTo(DEFAULT_POLICY);
+    }
+
+    @Test
+    public void createPolicyIgnoreId() {
+        // given
+        long idParameter = 1000L;
+        PolicyDto policyDto = new PolicyDto(idParameter, "policy_123");
+        policyDto.setPolicy(DEFAULT_POLICY);
+
+        // when
+        PolicyDto createdDto = createEntity(BASE_URL, policyDto);
+
+        // then
+        assertThat(createdDto.getName()).isEqualTo("policy_123");
+        assertThat(createdDto.getPolicy()).isEqualTo(DEFAULT_POLICY);
+        assertThat(createdDto.getId()).isNotEqualTo(idParameter);
+    }
+
+    @Test
+    public void updatePolicy() {
+        // given
+        Long id = createPolicy(getPolicyDto("policy_123")).getId();
+
+        long ignoredId = id + 100L;
+
+        PolicyDto updatedPolicyDto = new PolicyDto(ignoredId, "policy_456");
+        updatedPolicyDto.setPolicy("hasRelation(ctx.user, 'RELATION_5', ctx.patient)");
+
+        // when
+        PolicyDto updatedDto = updateEntity(BASE_URL, id, updatedPolicyDto);
+
+        // then
+        assertThat(updatedDto.getName()).isEqualTo("policy_456");
+        assertThat(updatedDto.getPolicy()).isEqualTo("hasRelation(ctx.user, 'RELATION_5', ctx.patient)");
+    }
+
+    @Test
+    public void updatePolicyForUnknownIdFailed() {
+        // given
+        PolicyDto policyDto = createPolicy(getPolicyDto("policy_123"));
+        long unknownId = policyDto.getId() + 100L;
+
+        // when
+        ResponseEntity<PolicyDto> updatedResponse = exchangePut(BASE_URL, unknownId, getPolicyDto("policy_456"));
+
+        // then
+        assertThat(updatedResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(updatedResponse.getBody()).isNull();
+    }
+
+    @Test
+    public void deletePolicy() {
+        // given
+        Long id = createPolicy(getPolicyDto("policy_123")).getId();
+
+        // when
+        ResponseEntity<Void> deleteResponse = exchangeDelete(BASE_URL, id);
+
+        // then
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void deletePolicyForUnknownIdFailed() {
+        // given
+        long unknownId = Long.MAX_VALUE;
+
+        // when
+        ResponseEntity<Void> deleteResponse = exchangeDelete(BASE_URL, unknownId);
+
+        // then
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    private PolicyDto getPolicyDto(String name) {
+        PolicyDto policyDto = new PolicyDto(null, name);
+        policyDto.setPolicy(DEFAULT_POLICY);
+        return policyDto;
     }
 
     private void validateAndDelete(PolicyDto dto) {
