@@ -1,5 +1,6 @@
 package care.better.abac.dto.content;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Collections;
@@ -55,6 +56,7 @@ public class AppContentSyncResultDto {
         this.policies = ImmutableList.copyOf(policies);
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return partyTypes.isEmpty() && parties.isEmpty() && relationTypes.isEmpty() && partyRelations.isEmpty() && policies.isEmpty();
     }
