@@ -1,0 +1,77 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Abac",
+		"_postman_id": "243f637c-70ab-4887-7e77-738091a92a91",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DEMOGRAPHICS_CAREPLAN_READ",
+			"request": {
+				"url": "http://localhost:8080/rest/v1/policy/execute/name/DEMOGRAPHICS_CAREPLAN_READ",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJvbi1iTEVjcGJxMGNiN096czJ2UkhMVkdsVkp2SzJzc0dkS19rUDdZQnlVIn0.eyJqdGkiOiJjMDhjYmZmMy1jYTY0LTQyNzEtYmMzOC02YWExN2YyZDg1ZGYiLCJleHAiOjE2MDM4MDQyMTMsIm5iZiI6MCwiaWF0IjoxNjAzNzg2MjEzLCJpc3MiOiJodHRwOi8vYWJhYy1kZXYuYmV0dGVyLmNhcmU6ODA4MC9hdXRoL3JlYWxtcy9UaGluayFFSFIiLCJhdWQiOlsidGhpbmtlaHItcmVzdCIsImFjY291bnQiXSwic3ViIjoiYTVjMjQxNWYtYTgxZS00N2E5LWFhNGEtNGZiMThkYzYzOGQ0IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidGhpbmthYmFjIiwiYXV0aF90aW1lIjowLCJzZXNzaW9uX3N0YXRlIjoiNDg5NzMyN2UtNGU3Ni00NWRlLWIwNjctYTE0NmI0NmU5MjZhIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAvKiIsIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJ0aGlua2Voci1yZXN0Ijp7InJvbGVzIjpbIlJPTEVfV1JJVEVfRUhSIiwiUk9MRV9QUkVTRU5UQVRJT04iLCJST0xFX1FVRVJZIiwiUk9MRV9BRE1JTiIsIlJPTEVfVklFVyIsIlJPTEVfV1JJVEUiLCJST0xFX1JFQUQiXX0sInRoaW5rYWJhYyI6eyJyb2xlcyI6WyJERU1PR1JBUEhJQ1NfUkVBRF9QQVRJRU5UIiwiREVNT0dSQVBISUNTX1dSSVRFIiwiUk9MRV9QT0xJQ1kiLCJST0xFX1VTRVIiLCJQQVRIRklOREVSX0NBUkVQTEFOLVNUVURZX0NBUkVQTEFOX1BBVElFTlRfTUFOQUdFTUVOVCIsIlJPTEVfQURNSU4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiIiwidGhpbmtlaHJfZG9tYWluIjoiVGVzdGluZyIsIm5hbWUiOiJVc2VyIFVzZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ1c2VyIiwiZ2l2ZW5fbmFtZSI6IlVzZXIiLCJmYW1pbHlfbmFtZSI6IlVzZXIifQ.aYrfUCLkOH00SdPQkbf15oU1-YNPgSma9F1lTYPt7RuGLLoJ72HnbkN82kHQo1LHcFPjcrsNjj_wA2GEq_jfKNNlip_oqMoX0kj9XAn89oorID1Q__SOGt1NsabBiyf1bVbX_BqOexHvMXJk77HobI-8rBDUyVPFUhyvL8yLZBqqDJ4BF5OE6tyRid1aBmuZWSFC0F23LGT2xR6ex2lYEn-kBbrWr_vmTSUihtdV4nDsn8jKs72aXOyunXkY_iiUotFrsmEEgom_3Nb7TMO0pSNcdyN3dJjpwaYyu5F67P5tZv-3wSYfh5Lm0V4OiSKpgZ5hkBGF2wmexvcJt_V6KQ",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"careplan\" : \"PLAN_A\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Obtain token",
+			"request": {
+				"url": "http://localhost:8080/auth/realms/Think!EHR/protocol/openid-connect/token",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "user",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "user",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "thinkabac",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

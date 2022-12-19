@@ -1,0 +1,15 @@
+= ABAC server
+
+ABAC server is an implementation of attribute based access control,
+which allows writing access rules based on relations between parties and attributes defined within access context.
+Most of the configuration can be done via administration console, which can be accessed under server's base URL.
+
+Only users with role 'ROLE_ADMIN' can access the console!
+
+== Feedback and support
+
+Please use our official link:https://better-care.zendesk.com/[Zendesk board^] to report any bugs and issues with the appropriate components.
+
+== Next steps
+
+* xref:installation_and_configuration_guide.adoc[Installation and Configuration Guide]

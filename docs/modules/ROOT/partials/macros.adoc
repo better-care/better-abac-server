@@ -1,0 +1,14 @@
+ifdef::backend-html5[]
+:quarter-width: width='25%'
+:third-width: width='33%'
+:half-width: width='50%'
+:full-width: width='100%'
+:video_width: width='970'
+:video_height: height='auto'
+endif::[]
+ifdef::backend-pdf[]
+:quarter-width: scaledwidth='25%'
+:third-width: scaledwidth='33%'
+:half-width: scaledwidth='50%'
+:full-width: scaledwidth='100%'
+endif::[]

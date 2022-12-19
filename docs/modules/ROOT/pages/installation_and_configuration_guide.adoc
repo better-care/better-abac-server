@@ -1,0 +1,415 @@
+[.platform]
+
+= ABAC server: Installation and Configuration Guide
+Better <platform@better.care>
+
+include::partial$legal.adoc[]
+
+include::partial$conventions.adoc[]
+
+== Preface
+
+This guide describes how to install and configure ABAC Server.
+
+== Initial directory and file structure
+
+----
+|abac
+| |____plugins
+| | |____example-plugin.zip
+| | |____example-plugin.properties
+| |____log
+| |____application.properties
+| |____keycloak.json
+| |____log4j2.xml
+| |____better-abac-server.jar
+| |____better-abac-server.conf
+----
+
+== Configuration
+
+Properties are used to adjust the server configuration.
+These are settable in `application.properties`. Each plugin can also be customized with property file - see section *Plugin configuration and deploy* for details.
+For correct installation, please remove all `-TEMPLATE` suffixes from file names.
+
+[[properties]]
+.List of properties
+[cols="4,8,3,6",options="header"]
+|===
+|Name |Description |Default value  |Possible values
+4+|*SERVER*
+|server.port |Server HTTP port. |8080 |
+|server.servlet.context-path |Context path of the application. |/ |
+4+|*PARTYINFO*
+|partyinfo.services[].type |Type of service for retrieving party details | | USER, PATIENT
+|partyinfo.services[].impl |Extractor implementation for retrieving party detail data | | keycloak, demographics
+|partyinfo.services[].data |Connection string for exctaractor (Full URL to keycloak or demographics server) | |
+4+|*SSO*
+|sso.enabled |Enable SSO |true |
+|sso.rolesClientId |Client id for roles resource | abac |
+|sso.issuer |Token issuer URL | |
+|sso.jwksEndpoint |JWKS endpoint URL | |
+|sso.tokenDataExtractor |Data extractor implementation for JWT token |keycloak |keycloak
+|sso.rolesPath |Additional comma separated JSON paths to extract roles from |/resource_access/abac/roles |
+|sso.mapper[].tokenAttributePath |Path to the attribute value in JWT token | | workplace_id
+|sso.mapper[].contextKeyValue |Context attribute property name | | workplaceId
+4+|*SPRING*
+|spring.datasource.url |DB URL | |
+|spring.datasource.username |DB username | |
+|spring.datasource.password |DB password | |
+|spring.datasource.driver-class-name |DB driver fully qualified class name |  |
+|spring.jpa.hibernate.naming-strategy |DB schema naming strategy | org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy |
+|spring.jpa.hibernate.ddl-auto |DB schema creation strategy| update |
+|spring.datasource.hikari.register-mbeans | Enable MBean | true  |
+4+|*CLIENT AUTH*
+|client.auth.type | Client authentication type |  | oauth2
+|spring.security.oauth2.client.registration.oauth2.authorization-grant-type | Authorization grant type |  | client_credentials
+|spring.security.oauth2.client.registration.oauth2.client-id | Client id | |
+|spring.security.oauth2.client.registration.oauth2.client-secret | Client secret for client_credentials authentication | |
+|spring.security.oauth2.client.provider.oauth2.token-uri | Token endpoint URL | |
+4+|*Health ENDPOINT*
+|management.endpoint.health.show-details | Health information |  | never, when-authorized, always
+|management.endpoints.web.base-path | Endpoint path |  |
+|===
+[[logging]]
+=== Logging configuration
+
+ABAC Server is using `log4j2` for logging.
+
+NOTE: To configure logging, create log4j2.xml file and place it in the root folder.
+
+Logging configuration example:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="30">
+    <Appenders>
+        <RollingRandomAccessFile name="rolling-file" fileName="logs/server.log" filePattern="logs/server-%i.log.gz">
+            <PatternLayout>
+                <Pattern>[%d{ISO8601}] [%p] [%c{1}] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="rolling-file"/>
+        </Root>
+    </Loggers>
+</Configuration>
+
+----
+
+=== Keycloak configuration
+
+Keycloak configuration is required for authentication to the Abac Server admin console.
+To configure access for admin console, create keycloak.json file and place it in the root folder.
+Users that will access the admin console must have role 'ROLE_ADMIN' assigned to them!
+
+Keycloak configuration example:
+
+[source,json]
+----
+{
+  "realm": "Think!EHR",
+  "auth-server-url": "http://localhost:8080/auth",
+  "ssl-required": "external",
+  "resource": "abac",
+  "public-client": true,
+  "use-resource-role-mappings": true
+}
+----
+
+A service account also needs to be set up for ABAC plugins to be able to synchronise data
+(parties and relations) from other systems. This account is referenced by properties in the
+CLIENT AUTH section (see <<properties>>).
+
+=== Wrapper configuration
+
+[[launch]]
+==== Configuring using launch script on unix environments
+
+Abac Server is using spring boot launch script to start the server on the unix environments.
+Launch file is already bundled in the jar!
+Please refer to the official spring boot documentation for more details.
+
+.Spring boot launch script default values
+[cols="4,8",options="header"]
+|===
+|Name |Description
+| `LOG_FOLDER` | /var/log
+| `PID_FOLDER` | /var/run
+| `LOG_FILENAME` | spring.log
+| `MODE` | auto |
+|===
+
+Example of `better-abac-server.conf` and `better-abac-server.service` where Abac Server will run as a linux service:
+
+----
+LOG_FOLDER=log/
+LOG_FILENAME=server.log
+PID_FOLDER=log/
+MODE=auto
+JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+----
+
+----
+[Unit]
+Description=ABAC Server
+After=syslog.target
+
+[Service]
+User=<user>
+ExecStart=<path to>/better-abac-server.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+----
+
+Example of `better-abac-server.conf` where Abac Server will run in the background:
+
+----
+LOG_FOLDER=log/
+LOG_FILENAME=server.log
+PID_FOLDER=log/
+MODE=service
+JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+----
+
+Additional JAVA options (for example `Xms` and `Xmx`) can be configured using `JAVA_OPTS`.
+
+NOTE: Only log entries that Abac Server wrote on standard output will be written to `LOG_FOLDER/LOG_FILENAME`
+`better-abac-server.conf` file must be in the same directory as the `better-abac-server.jar`.
+
+== Running the server
+
+=== Unix based environments using launch script
+
+To start the server, run:
+
+[source,bash]
+----
+./better-abac-server.jar start
+----
+
+To stop a server, run:
+
+[source,bash]
+----
+./better-abac-server.jar stop
+----
+
+To restart a server, run:
+
+[source,bash]
+----
+./better-abac-server.jar restart
+----
+
+[[external_system_configuration]]
+=== External system configuration
+
+* If external system isn't running, only save configuration on ABAC side by setting query parameter `validate` to
+`false`. In that case, external system should validate its configuration on startup.
+* Field `config` in policies contains external system's specific configuration
+* New external system configuration is created by executing:
+----
+POST <abac_server_url>/rest/v1/admin/client/config
+----
+with body like:
+----
+{
+    "name": "demographics",
+    "abacRestBaseUrl": "<external_system_abac_rest_url>",
+    "policies": [
+        {
+            "name": "DEMOGRAPHICS_READ",
+            "type": "RULE",
+            "config": "{\"operations\": [\"READ\",\"VREAD\"], \"resources\": [\"Patient\"]}"
+        },
+        {
+            "name": "DEMOGRAPHICS_PATIENT_READ",
+            "type": "QUERY",
+            "config": "{\"resources\": [\"Patient\"]}"
+        },
+        {
+            "name": "DEMOGRAPHICS_PATIENT_WRITE",
+            "type": "RULE",
+            "config": "{\"operations\": [\"CREATE\", \"UPDATE\", \"DELETE\"], \"resources\": [\"Patient\"]}"
+        }
+    ]
+}
+----
+The response header contains resource `Location` with included system id.
+
+* External system configuration is updated by executing:
+----
+PUT <abac_server_url>/rest/v1/admin/client/config/<system_id>
+----
+with body like:
+----
+{
+    "name": "demographics",
+    "abacRestBaseUrl": "http://localhost:8189/rest/v1/admin/external/abac",
+    "policies": [
+        {
+            "name": "DEMOGRAPHICS_READ_NEW",
+            "type": "RULE",
+            "config": "{\"operations\": [\"READ\",\"VREAD\"], \"resources\": [\"Patient\"]}"
+        },
+        {
+            "externalId": "53364cde-d361-47e7-a635-b6bc451d637c",
+            "name": "DEMOGRAPHICS_PATIENT_WRITE_CHANGED",
+            "type": "RULE",
+            "config": "{\"operations\": [\"CREATE\", \"UPDATE\", \"DELETE\"], \"resources\": [\"Patient\"]}"
+        }
+    ]
+}
+----
+If policy contains attribute `externalId`, the existing policy is updated.
+
+==== Integration requirements on external system
+
+* Implement REST endpoint `POST <abacRestBaseUrl>/config/validate` which should validate all fields `config` in policies.
+* Implement REST endpoint `POST <abacRestBaseUrl>/notify` to get notified on some ABAC events. Currently, only system type `CONFIG_REFRESH` is supported.
+External system should immediately update its ABAC configuration, when system event `CONFIG_REFRESH` is triggered.
+
+=== Configuration import and export
+
+
+=== Plugins
+
+While parties and relations can be manually entered via web user interface, it is usually best practice to do the automatic import from external systems.
+This can be done via ABAC plugin infrastructure.
+
+==== Plugin configuration and deploy
+
+ABAC server comes out-of-the-box with two plugins for importing parties and party relations - EHR server and Demographics server plugin.
+Each plugin is packaged as a zip file that has to be copied inside plugins directory of ABAC server deploy.
+
+===== EHR plugin configuration
+EHR plugin is configured via better-abac-ehr-plugin.properties that has to be copied inside plugins directory.
+
+[[ehr_plugin_properties]]
+.List of EHR plugin properties
+[cols="4,8,3,6",options="header"]
+|===
+|Name |Description |Required | Possible values
+4+|*EHR SERVER*
+|thinkehr.url |EHR server URL. |Yes |
+|thinkehr.listeners.[listener-name].aql |AQL for EHR Event. AQL should return care_plan_id, ehr_id, external_id, state_code, start_date and end_date as values in SELECT statement |Yes |
+|thinkehr.listeners.[listener-name].transformer |Type of EventTransformer |Yes | `care.better.abac.plugin.ehr.transformer.ConsentTransformer`, `care.better.abac.plugin.ehr.transformer.CareHomeTransformer`
+|thinkehr.listeners.[listener-name].phase |Phase of EHR Event|Yes | `PRE_COMMIT`, `POST_COMMIT`
+4+|*DEMOGRAPHICS SERVER*
+|thinkehr.subject.demographics-server.resolver |`care.better.abac.plugin.ehr.resolver.SubjectResolver` | No | `care.better.abac.plugin.ehr.resolver.DemographicsSubjectResolver`
+|thinkehr.subject.demographics-server.url |Demographics server URL | No |
+|thinkehr.subject.demographics-server.identifier |Patient's Identifier | No |
+|===
+
+* More than one event listener could be set.
+
+.List of subject resolvers
+[cols="4,8",options="header"]
+|===
+|Name |Description
+|DemographicsSubjectResolver | Patient with identifier (property `thinkehr.subject.demographics-server.identifier`) equal to external_id, retrieved in AQL, is retrieved from Demographics Server. Patient's resource ID is set on PartyRelation.
+|DefaultSubjectResolver | external_id, retrieved in AQL, is set on PartyRelation
+|===
+
+====== EHR plugin configuration
+
+Example of configuration:
+
+[source,properties]
+----
+thinkehr.url=http://localhost:8081
+
+thinkehr.subject.demographics-server.resolver=care.better.abac.plugin.ehr.resolver.DemographicsSubjectResolver
+thinkehr.subject.demographics-server.url=http://localhost:8189/rest/v1/fhir
+thinkehr.subject.demographics-server.identifier=MRN
+
+thinkehr.listeners.consent.aql=SELECT e/ehr_id/value as ehr_id, e/ehr_status/subject/external_ref/id/value as external_id, c/content[openEHR-EHR-ACTION.care_plan.v0]/protocol[at0015]/items[at0016]/value/id as care_plan_id, c/content[openEHR-EHR-ACTION.informed_consent.v0]/ism_transition/current_state/value as state_code, c/content[openEHR-EHR-ACTION.informed_consent.v0]/description[at0001]/items[at0008]/value/value as start_date, c/content[openEHR-EHR-ACTION.informed_consent.v0]/description[at0001]/items[at0009]/value/value as end_date FROM EHR e CONTAINS COMPOSITION c WHERE c/name/value='Care Plan Consent'
+thinkehr.listeners.consent.transformer=care.better.abac.plugin.ehr.transformer.ConsentTransformer
+thinkehr.listeners.consent.phase=POST_COMMIT
+
+thinkehr.listeners.carehome.aql=SELECT e/ehr_id/value as ehr_id, e/ehr_status/subject/external_ref/id/value as external_id, h/data[at0001]/items[openEHR-EHR-CLUSTER.housing_record.v1]/items[openEHR-EHR-CLUSTER.organisation.v0, 'Care home details']/items[at0001]/value/defining_code/code_string as care_home_id FROM EHR e CONTAINS EVALUATION h[openEHR-EHR-EVALUATION.housing_summary.v1, 'Accommodation'] WHERE EXISTS care_home_id
+thinkehr.listeners.carehome.transformer=care.better.abac.plugin.ehr.transformer.CareHomeTransformer
+thinkehr.listeners.carehome.phase=POST_COMMIT
+----
+
+Example of configuration with default subject resolver:
+
+[source,properties]
+----
+thinkehr.url=http://localhost:8081
+
+thinkehr.listeners.consent.aql=SELECT e/ehr_id/value as ehr_id, e/ehr_status/subject/external_ref/id/value as external_id, c/content[openEHR-EHR-ACTION.care_plan.v0]/protocol[at0015]/items[at0016]/value/id as care_plan_id, c/content[openEHR-EHR-ACTION.informed_consent.v0]/ism_transition/current_state/value as state_code, c/content[openEHR-EHR-ACTION.informed_consent.v0]/description[at0001]/items[at0008]/value/value as start_date, c/content[openEHR-EHR-ACTION.informed_consent.v0]/description[at0001]/items[at0009]/value/value as end_date FROM EHR e CONTAINS COMPOSITION c WHERE c/name/value='Care Plan Consent'
+thinkehr.listeners.consent.transformer=care.better.abac.plugin.ehr.transformer.ConsentTransformer
+thinkehr.listeners.consent.phase=POST_COMMIT
+
+thinkehr.listeners.carehome.aql=SELECT e/ehr_id/value as ehr_id, e/ehr_status/subject/external_ref/id/value as external_id, h/data[at0001]/items[openEHR-EHR-CLUSTER.housing_record.v1]/items[openEHR-EHR-CLUSTER.organisation.v0, 'Care home details']/items[at0001]/value/defining_code/code_string as care_home_id FROM EHR e CONTAINS EVALUATION h[openEHR-EHR-EVALUATION.housing_summary.v1, 'Accommodation'] WHERE EXISTS care_home_id
+thinkehr.listeners.carehome.transformer=care.better.abac.plugin.ehr.transformer.CareHomeTransformer
+thinkehr.listeners.carehome.phase=POST_COMMIT
+----
+
+===== Demographics Server plugin configuration
+Demographics Server plugin is configured via better-abac-demographics-server-plugin.properties that has to be copied inside plugins directory.
+
+[[demographics_plugin_properties]]
+.List of Demographics plugin properties
+[cols="4,8,3,6",options="header"]
+|===
+|Name |Description |Default value  |Possible values
+4+|*DEMOGRAPHICS SERVER*
+|demographics-server.url |Demographics server URL | |
+4+|*DEMOGRAPHICS SYNCHRONIZERS*
+|demographics-server.synchronizers.[synchronizer-name].synchronizer |Fully qualified class name of synchronizer | |
+care.better.abac.plugin.demographicsserver.synchronizer.r4.research.study.ResearchStudySynchronizer
+care.better.abac.plugin.demographicsserver.synchronizer.r4.care.team.CareTeamSynchronizer
+care.better.abac.plugin.demographicsserver.synchronizer.r4.care.plan.CarePlanSynchronizer
+care.better.abac.plugin.demographicsserver.synchronizer.r4.patient.PatientSynhronizer
+|demographics-server.synchronizers.[synchronizer-name].transformers | Comma separated list of fully qualified class name of transformers | |
+care.better.abac.plugin.demographicsserver.synchronizer.r4.research.study.AssignedStudyTransformer
+care.better.abac.plugin.demographicsserver.synchronizer.r4.care.team.TeamMemberTransformer
+care.better.abac.plugin.demographicsserver.synchronizer.r4.care.plan.AssignedTeamTransformer
+care.better.abac.plugin.demographicsserver.synchronizer.r4.patient.PersonalPhysicianTransformer
+care.better.abac.plugin.demographicsserver.synchronizer.r4.patient.PersonalPhysicianOrganizationTransformer
+|===
+
+Example of configuration:
+
+[source,properties]
+----
+demographics-server.url=http://localhost:8189/rest/v1/fhir
+
+demographics-server.synchronizers.patient.synchronizer=care.better.abac.plugin.demographicsserver.synchronizer.r4.patient.PatientSynchronizer
+demographics-server.synchronizers.patient.transformers=care.better.abac.plugin.demographicsserver.synchronizer.r4.patient.PersonalPhysicianTransformer,\
+  care.better.abac.plugin.demographicsserver.synchronizer.r4.patient.PersonalPhysicianOrganizationTransformer
+
+demographics-server.synchronizers.care-team.synchronizer=care.better.abac.plugin.demographicsserver.synchronizer.r4.care.team.CareTeamSynchronizer
+demographics-server.synchronizers.care-team.transformers=care.better.abac.plugin.demographicsserver.synchronizer.r4.care.team.TeamMemberTransformer
+
+demographics-server.synchronizers.care-plan.synchronizer=care.better.abac.plugin.demographicsserver.synchronizer.r4.care.plan.CarePlanSynchronizer
+demographics-server.synchronizers.care-plan.transformers=care.better.abac.plugin.demographicsserver.synchronizer.r4.care.plan.AssignedTeamTransformer
+----
+
+.Synchronizers
+[cols="4,8,8",options="header"]
+|===
+| Synchronizer | Transformer | Task
+.2+| PatientSynchronizer | PersonalPhysicianOrganizationTransformer | store relations between patients and managing organizations
+| PersonalPhysicianTransformer | store relations between patients and personal physicians
+| CareTeamSynchronizer | TeamMemberTransformer | store relations between care teams and members as care team participants
+| CarePlanSynchronizer | AssignedTeamTransformer | store relations between care plans and care teams
+| ResearchStudySynchronizer | AssignedStudyTransformer | store relations between research studies and care teams
+|===
+
+=== Plugin development
+
+TBD
