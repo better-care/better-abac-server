@@ -1,7 +1,5 @@
 package care.better.abac.policy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import care.better.abac.policy.antlr.PolicyLexer;
 import care.better.abac.policy.antlr.PolicyParser;
 import care.better.abac.policy.convert.ConvertingPolicyVisitor;
@@ -10,9 +8,10 @@ import care.better.abac.policy.definition.DecisionOperation;
 import care.better.abac.policy.definition.DecisionPolicyRule;
 import care.better.abac.policy.definition.PolicyDefinition;
 import care.better.abac.policy.definition.PolicyRule;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;

@@ -6,7 +6,7 @@ import care.better.abac.dto.PartyRelationDto;
 import care.better.abac.dto.PartyTypeDto;
 import care.better.abac.dto.PolicyDto;
 import care.better.abac.dto.RelationTypeDto;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -121,7 +121,7 @@ public abstract class AbstractResourceTest {
         return response.getBody();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         for (String baseUrl : Arrays.asList(PartyRelationResourceTest.BASE_URL,
                                             RelationTypeResourceTest.BASE_URL,

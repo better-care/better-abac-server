@@ -26,11 +26,11 @@
         <commons-configuration.version>2.7</commons-configuration.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-text.version>1.8</commons-text.version>
-        <guava.version>31.1-jre</guava.version>
+        <guava.version>30.0-jre</guava.version>
         <hapi-fhir.version>5.7.0-B6</hapi-fhir.version>
         <javassist.version>3.29.2-GA</javassist.version>
         <javax-el.version>3.0.0</javax-el.version>
-        <jboss-logging.version>3.5.0.Final</jboss-logging.version>
+        <jboss-logging-annotations.version>2.2.1.Final</jboss-logging-annotations.version>
         <json-smart.version>2.3</json-smart.version>
         <jsr305.version>3.0.2</jsr305.version>
         <log4j2.version>2.19.0</log4j2.version>
@@ -219,13 +219,13 @@
             <dependency>
                 <groupId>org.jboss.logging</groupId>
                 <artifactId>jboss-logging-annotations</artifactId>
-                <version>${jboss-logging.version}</version>
+                <version>${jboss-logging-annotations.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.jboss.logging</groupId>
                 <artifactId>jboss-logging-processor</artifactId>
-                <version>${jboss-logging.version}</version>
+                <version>${jboss-logging-annotations.version}</version>
             </dependency>
 
             <dependency>
@@ -272,13 +272,21 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

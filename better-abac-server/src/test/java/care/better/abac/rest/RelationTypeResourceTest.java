@@ -3,9 +3,9 @@ package care.better.abac.rest;
 import care.better.abac.AbacConfiguration;
 import care.better.abac.dto.PartyTypeDto;
 import care.better.abac.dto.RelationTypeDto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -15,14 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Matic Ribic
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = AbacConfiguration.class)
 @EnableConfigurationProperties
@@ -34,7 +34,7 @@ public class RelationTypeResourceTest extends AbstractResourceTest {
     private String rolePartyType;
     private String formPartyName;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         rolePartyType = createPartyType(new PartyTypeDto(null, "ROLE")).getName();
         formPartyName = createPartyType(new PartyTypeDto(null, "FORM")).getName();

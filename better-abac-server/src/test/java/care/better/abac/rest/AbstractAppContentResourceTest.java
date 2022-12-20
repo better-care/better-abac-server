@@ -8,7 +8,6 @@ import care.better.abac.dto.content.PlainPartyDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Assert;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,6 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author Matic Ribic
@@ -63,7 +63,7 @@ public class AbstractAppContentResourceTest extends AbstractResourceTest {
         try (InputStream resource = AbstractAppContentResourceTest.class.getClassLoader().getResourceAsStream(resourceName)) {
             return objectMapper.readTree(resource);
         } catch (IOException e) {
-            Assert.fail("Failed to load resource " + resourceName + " with error: " + e.getMessage());
+            fail("Failed to load resource " + resourceName + " with error: " + e.getMessage());
             throw new IllegalStateException(e);
         }
     }
@@ -82,14 +82,14 @@ public class AbstractAppContentResourceTest extends AbstractResourceTest {
         try {
             JsonNode fieldNode = node.get(field);
             if (fieldNode.isMissingNode()) {
-                Assert.fail("Missing field " + field);
+                fail("Missing field " + field);
             }
 
             T value = objectMapper.treeToValue(fieldNode, fieldType);
             assertThat(value).isNotNull();
             return value;
         } catch (JsonProcessingException e) {
-            Assert.fail("Failed to parse field " + field + " with error: " + e.getMessage());
+            fail("Failed to parse field " + field + " with error: " + e.getMessage());
             throw new IllegalStateException(e);
         }
     }

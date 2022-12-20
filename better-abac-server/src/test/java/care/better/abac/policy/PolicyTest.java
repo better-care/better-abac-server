@@ -1,6 +1,5 @@
 package care.better.abac.policy;
 
-import com.google.common.collect.Lists;
 import care.better.abac.audit.ExecutionAuditEntry;
 import care.better.abac.audit.FunctionExecutionAuditEntry.Parameter;
 import care.better.abac.audit.PolicyExecutionAuditor;
@@ -16,9 +15,10 @@ import care.better.abac.policy.execute.PolicyExecutionContext;
 import care.better.abac.policy.execute.PolicyHelper;
 import care.better.abac.policy.execute.evaluation.BooleanEvaluationExpression;
 import care.better.abac.policy.execute.evaluation.EvaluationExpression;
+import com.google.common.collect.Lists;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Collections;

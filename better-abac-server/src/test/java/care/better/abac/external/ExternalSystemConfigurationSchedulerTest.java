@@ -7,12 +7,11 @@ import care.better.abac.dto.config.ExternalSystemInputDto;
 import care.better.abac.dto.config.ExternalSystemValidationStatus;
 import care.better.abac.external.ExternalSystemSchedulerConfiguration.ValidationTaskRunner;
 import care.better.abac.jpa.entity.ExternalSystemEntity;
-import care.better.abac.plugin.shedlock.ShedlockConfiguration;
 import care.better.abac.rest.PolicyExecutionResourceTest;
 import care.better.abac.rest.client.ValidationException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -21,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -32,7 +31,7 @@ import static org.assertj.core.api.Assertions.fail;
 /**
  * @author Matic Ribic
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {AbacConfiguration.class, PolicyExecutionResourceTest.Config.class})
 @TestPropertySource(properties = "abac.configValidationEnabled=true")
@@ -49,7 +48,7 @@ public class ExternalSystemConfigurationSchedulerTest {
 
     private ExternalSystemInputDto inputDto;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ExternalPolicyDto policyDto = new ExternalPolicyDto();
         policyDto.setName("Name");

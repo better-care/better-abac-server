@@ -1,9 +1,5 @@
 package care.better.abac.init;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import care.better.abac.KeycloakTest;
 import care.better.abac.dto.PartyDto;
 import care.better.abac.dto.PartyRelationDto;
@@ -11,8 +7,12 @@ import care.better.abac.dto.PartyTypeDto;
 import care.better.abac.dto.PolicyDto;
 import care.better.abac.dto.RelationTypeDto;
 import care.better.abac.jpa.entity.PartyType;
-import org.junit.Ignore;
-import org.junit.Test;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +49,7 @@ public class AbacInitialiserTest extends KeycloakTest {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Test
-    @Ignore
+    @Disabled
     public void initDb() throws IOException {
         createPartyTypes();
         createRelationTypes();

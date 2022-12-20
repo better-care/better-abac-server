@@ -6,8 +6,8 @@ import care.better.abac.jpa.entity.Policy;
 import care.better.abac.jpa.repo.PolicyRepository;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
@@ -27,7 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -42,12 +42,11 @@ import java.util.zip.ZipOutputStream;
 import static care.better.abac.rest.PolicyResource.POLICY_FILE_EXTENSION;
 import static care.better.abac.rest.PolicyResourceTest.Config;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author Andrej Dolenc
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {AbacConfiguration.class, Config.class})
 @EnableConfigurationProperties
@@ -211,8 +210,8 @@ public class PolicyResourceTest extends AbstractResourceTest {
 
     private void validateAndDelete(PolicyDto dto) {
         Policy policy = policyRepository.findByName(dto.getName());
-        assertEquals(dto.getName(), policy.getName());
-        assertEquals(dto.getPolicy(), policy.getPolicy());
+        assertThat(dto.getName()).isEqualTo(policy.getName());
+        assertThat(dto.getPolicy()).isEqualTo(policy.getPolicy());
         policyRepository.delete(policy);
     }
 

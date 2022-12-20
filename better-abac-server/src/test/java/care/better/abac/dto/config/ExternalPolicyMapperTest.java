@@ -2,8 +2,8 @@ package care.better.abac.dto.config;
 
 import care.better.abac.jpa.entity.ExternalPolicyEntity;
 import care.better.abac.jpa.entity.ExternalSystemEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ExternalPolicyMapperTest {
     private ExternalPolicyMapper mapper;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mapper = new ExternalPolicyMapper();
     }

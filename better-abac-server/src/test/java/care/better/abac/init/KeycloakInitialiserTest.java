@@ -1,10 +1,10 @@
 package care.better.abac.init;
 
+import care.better.abac.KeycloakTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
-import care.better.abac.KeycloakTest;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +36,7 @@ public class KeycloakInitialiserTest extends KeycloakTest {
     private final Map<String, String> clientNameToId = new HashMap<>();
 
     @Test
-    @Ignore
+    @Disabled
     public void initClient() throws IOException {
         ResponseEntity<JsonNode> responseEntity = restTemplate.exchange(BASE_URL + "/clients", HttpMethod.GET, getRequestEntity(), JsonNode.class);
         for (JsonNode jsonNode : responseEntity.getBody()) {

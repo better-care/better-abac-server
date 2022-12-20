@@ -22,10 +22,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -33,7 +32,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -45,11 +44,12 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author Matic Ribic
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {AbacConfiguration.class, InitTestEnvConfiguration.class})
 @EnableConfigurationProperties
@@ -299,7 +299,7 @@ public class AppContentServiceTest {
         assertThat(actualSyncResult.getResults(PlainPolicyDto.class)).containsExactlyInAnyOrderElementsOf(expectedResult.getResults(PlainPolicyDto.class));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         initTestEnvService.deleteAll();
     }
@@ -339,7 +339,7 @@ public class AppContentServiceTest {
         try (InputStream resource = AppContentResourceTest.class.getClassLoader().getResourceAsStream(resourceName)) {
             return objectMapper.readTree(resource);
         } catch (IOException e) {
-            Assert.fail("Failed to load resource " + resourceName + " with error: " + e.getMessage());
+//            Assert.ass("Failed to load resource " + resourceName + " with error: " + e.getMessage());
             throw new IllegalStateException(e);
         }
     }
@@ -360,7 +360,7 @@ public class AppContentServiceTest {
         try {
             return objectMapper.treeToValue(node.get(field), fieldType);
         } catch (JsonProcessingException e) {
-            Assert.fail("Failed to parse field " + field + " with error: " + e.getMessage());
+            fail("Failed to parse field " + field + " with error: " + e.getMessage());
             throw new IllegalStateException(e);
         }
     }

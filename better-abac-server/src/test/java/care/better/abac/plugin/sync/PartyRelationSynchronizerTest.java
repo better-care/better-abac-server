@@ -15,9 +15,9 @@ import care.better.abac.plugin.PartyRelationServiceInitializer;
 import care.better.abac.plugin.PartyRelationSynchronizer;
 import care.better.abac.plugin.spi.SynchronizingPartyRelationService;
 import com.google.common.collect.Sets;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.time.Instant;
@@ -55,7 +55,7 @@ public class PartyRelationSynchronizerTest {
                                                                                          relationTypeRepository,
                                                                                          partyChangeMapper);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Mockito.reset(partyRelationRepository, partyRepository, relationTypeRepository, partyChangeMapper, service);
         Mockito.when(partyChangeMapper.map(any()))
@@ -78,7 +78,7 @@ public class PartyRelationSynchronizerTest {
         Mockito.doReturn(Collections.singleton(RELATION_TYPE)).when(service).providesFor();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         Mockito.validateMockitoUsage();
     }

@@ -1,7 +1,7 @@
 package care.better.abac;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,7 +22,7 @@ public abstract class KeycloakTest {
 
     private HttpHeaders headers;
 
-    @Before
+    @BeforeEach
     public void init() {
         headers = getHeaders();
     }

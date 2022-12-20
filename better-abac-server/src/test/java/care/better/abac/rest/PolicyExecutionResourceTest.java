@@ -19,8 +19,8 @@ import care.better.abac.rest.PolicyExecutionResourceTest.Config;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import org.assertj.core.util.Lists;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -38,7 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,11 +51,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Bostjan Lah
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {AbacConfiguration.class, Config.class})
 @EnableConfigurationProperties
-@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
 @AutoConfigureTestDatabase
 @TestPropertySource(properties = "sso.enabled = false")
 public class PolicyExecutionResourceTest {
@@ -79,7 +79,9 @@ public class PolicyExecutionResourceTest {
 
         assertThat(HttpStatus.CONFLICT == executeSimple(policyName, ImmutableMap.of("user", "?", "patient", "patient1")));
 
-        BooleanOperationEvaluationExpression expression = (BooleanOperationEvaluationExpression)executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient1"));
+        BooleanOperationEvaluationExpression expression = (BooleanOperationEvaluationExpression)executeComplex(policyName,
+                                                                                                               ImmutableMap.of("user", "?", "patient",
+                                                                                                                               "patient1"));
         assertThat(expression.getBooleanOperation()).isEqualTo(BooleanOperation.OR);
         BooleanOperationEvaluationExpression allOf = (BooleanOperationEvaluationExpression)expression.getLeftChild();
         BooleanOperationEvaluationExpression noneOf = (BooleanOperationEvaluationExpression)expression.getRightChild();
@@ -124,7 +126,9 @@ public class PolicyExecutionResourceTest {
 
         assertThat(HttpStatus.CONFLICT == executeSimple(policyName, ImmutableMap.of("user", "?", "patient", "patient1")));
 
-        BooleanOperationEvaluationExpression expression = (BooleanOperationEvaluationExpression)executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient1"));
+        BooleanOperationEvaluationExpression expression = (BooleanOperationEvaluationExpression)executeComplex(policyName,
+                                                                                                               ImmutableMap.of("user", "?", "patient",
+                                                                                                                               "patient1"));
         assertThat(expression.getBooleanOperation()).isEqualTo(BooleanOperation.AND);
         ValueSetEvaluationExpression valueSet = (ValueSetEvaluationExpression)expression.getLeftChild();
         ResultSetEvaluationExpression resultSet = (ResultSetEvaluationExpression)expression.getRightChild();
@@ -168,12 +172,17 @@ public class PolicyExecutionResourceTest {
 
         assertThat(executeSimple(policyName, ImmutableMap.of("user", "user", "patient", Lists.newArrayList("patient")))).isEqualTo(HttpStatus.OK);
 
-        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", Lists.newArrayList("patient"))))).isEqualTo(Sets.newHashSet("user"));
-        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", Lists.newArrayList("patient1"))))).isEqualTo(Sets.newHashSet("user", "user1", "user2"));
-        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", Lists.newArrayList("patient2"))))).isEqualTo(Sets.newHashSet("user", "user1"));
+        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", Lists.newArrayList("patient"))))).isEqualTo(
+                Sets.newHashSet("user"));
+        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", Lists.newArrayList("patient1"))))).isEqualTo(
+                Sets.newHashSet("user", "user1", "user2"));
+        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", Lists.newArrayList("patient2"))))).isEqualTo(
+                Sets.newHashSet("user", "user1"));
 
-        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "user", "patient", "?")))).isEqualTo(Sets.newHashSet("patient", "patient1", "patient2"));
-        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "user1", "patient", "?")))).isEqualTo(Sets.newHashSet("patient1", "patient2"));
+        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "user", "patient", "?")))).isEqualTo(
+                Sets.newHashSet("patient", "patient1", "patient2"));
+        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "user1", "patient", "?")))).isEqualTo(
+                Sets.newHashSet("patient1", "patient2"));
         assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "user2", "patient", "?")))).isEqualTo(Sets.newHashSet("patient1"));
 
     }
@@ -224,7 +233,8 @@ public class PolicyExecutionResourceTest {
 
         assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "user2", "patient", "?")))).isEmpty();
         assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "user", "patient", "?")))).isEqualTo(Sets.newHashSet("patient", "patient3"));
-        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "user1", "patient", "?")))).isEqualTo(Sets.newHashSet("patient1", "patient2"));
+        assertThat(toResultSet(executeComplex(policyName, ImmutableMap.of("user", "user1", "patient", "?")))).isEqualTo(
+                Sets.newHashSet("patient1", "patient2"));
     }
 
     @Test
@@ -280,11 +290,13 @@ public class PolicyExecutionResourceTest {
 
         assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient")), path)).isEmpty();
         assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient1")), path)).isEmpty();
-        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient2")), path)).isEqualTo(Sets.newHashSet("CarePlan/user2"));
+        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "?", "patient", "patient2")), path)).isEqualTo(
+                Sets.newHashSet("CarePlan/user2"));
 
         assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user", "patient", "?")), path)).isEmpty();
         assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user1", "patient", "?")), path)).isEmpty();
-        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user2", "patient", "?")), path)).isEqualTo(Sets.newHashSet("CarePlan/patient2"));
+        assertThat(toValueSet(executeComplex(policyName, ImmutableMap.of("user", "user2", "patient", "?")), path)).isEqualTo(
+                Sets.newHashSet("CarePlan/patient2"));
     }
 
     @Test
@@ -349,7 +361,8 @@ public class PolicyExecutionResourceTest {
     }
 
     private EvaluationExpression executeComplex(String name, Map<String, Object> context) {
-        ResponseEntity<EvaluationExpression> response = restTemplate.postForEntity(BASE_URL + "/policy/execute/name/{name}/expression", context, EvaluationExpression.class, name);
+        ResponseEntity<EvaluationExpression> response = restTemplate.postForEntity(BASE_URL + "/policy/execute/name/{name}/expression", context,
+                                                                                   EvaluationExpression.class, name);
         assertThat(response.getStatusCode().is2xxSuccessful());
         return response.getBody();
     }

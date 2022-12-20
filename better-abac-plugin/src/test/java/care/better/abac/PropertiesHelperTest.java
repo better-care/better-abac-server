@@ -1,11 +1,12 @@
 package care.better.abac;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.Properties;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andrej Dolenc
@@ -14,7 +15,7 @@ public class PropertiesHelperTest {
 
     final Properties properties = new Properties();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         properties.clear();
         properties.setProperty("a.b.c1", "1");
@@ -27,13 +28,13 @@ public class PropertiesHelperTest {
         Properties withPrefix = PropertiesHelper.getPropertiesByPrefix(properties, "a.b", true);
         Properties withoutPrefix = PropertiesHelper.getPropertiesByPrefix(properties, "a.b", false);
 
-        Assert.assertEquals("1", withPrefix.getProperty("a.b.c1"));
-        Assert.assertEquals("2", withPrefix.getProperty("a.b.c2"));
-        Assert.assertNull(withPrefix.getProperty("a.d"));
+        assertThat(withPrefix.getProperty("a.b.c1")).isEqualTo("1");
+        assertThat(withPrefix.getProperty("a.b.c2")).isEqualTo("2");
+        assertThat(withPrefix.getProperty("a.d")).isNull();
 
-        Assert.assertEquals("1", withoutPrefix.getProperty("c1"));
-        Assert.assertEquals("2", withoutPrefix.getProperty("c2"));
-        Assert.assertNull(withoutPrefix.getProperty("a.d"));
+        assertThat(withoutPrefix.getProperty("c1")).isEqualTo("1");
+        assertThat(withoutPrefix.getProperty("c2")).isEqualTo("2");
+        assertThat(withoutPrefix.getProperty("a.d")).isNull();
     }
 
     @Test
@@ -43,12 +44,12 @@ public class PropertiesHelperTest {
         Properties propertyMap1 = propertyMap.get("b");
         Properties propertyMap2 = propertyMap.get("d");
 
-        Assert.assertNotNull(propertyMap1);
-        Assert.assertNotNull(propertyMap2);
+        assertThat(propertyMap1).isNotNull();
+        assertThat(propertyMap2).isNotNull();
 
-        Assert.assertEquals("1", propertyMap1.getProperty("c1"));
-        Assert.assertEquals("2", propertyMap1.getProperty("c2"));
-        Assert.assertEquals("3", propertyMap2.getProperty("c1"));
+        assertThat(propertyMap1.getProperty("c1")).isEqualTo("1");
+        assertThat(propertyMap1.getProperty("c2")).isEqualTo("2");
+        assertThat(propertyMap2.getProperty("c1")).isEqualTo("3");
     }
 }
 
