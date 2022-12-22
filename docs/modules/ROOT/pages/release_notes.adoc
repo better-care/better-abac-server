@@ -12,6 +12,7 @@ move out of comment block, when released:
 [caption=]
 ====
 * Add REST API for content synchronization
+* Add /prometheus monitoring endpoint
 ====
 --
 
