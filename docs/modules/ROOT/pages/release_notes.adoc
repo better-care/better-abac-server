@@ -1,0 +1,99 @@
+= ABAC {page-component-display-version} Release Notes
+:toc2:
+:source-highlighter:
+:icons:
+:sectanchors:
+
+
+[comment]
+--
+move out of comment block, when released:
+.Version 1.0.10 -
+[caption=]
+====
+* Add REST API for content synchronization
+====
+--
+
+.Version 1.0.9 - 2022-06-24
+[caption=]
+====
+* Add REST API to retrieve application metadata
+* Introduce partyExists function
+* Add possibility to extract roles to the context
+* Reduce dependency on a specific SSO provider (Keycloak)
+* Improve REST endpoint HTTP status responses
+* Make query execution always interpret question marks as wildcards (where supported)
+====
+
+.Version 1.0.8 - 2022-02-22
+[caption=]
+====
+[IMPORTANT]
+For this version to work, you must remove the spring.jpa.hibernate.ddl-auto property from application.properties.
+
+* Remove support for password-based SSO client authentication in favour of client_credentials; see the changed application.properties-TEMPLATE file
+* Upgrade Log4j2 version to 2.17.1 due to a zero-day vulnerability (CVE-2021-45105)
+* Add automatic database schema upgrades
+* Add the phase attribute to policies for external configuration
+* EHR Plugin: care home residency information support
+* Add health endpoint; please add the spring.datasource.hikari.register-mbeans=true, management.endpoint.health.show-details=always and management.endpoints.web.base-path=/ properties to the application.properties file
+====
+
+.Version 1.0.7 - 2021-12-15
+[caption=]
+====
+[IMPORTANT]
+SECURITY UPDATE! Upgrade Log4j2 version to 2.16.0 due to a zero-day vulnerability (CVE-2021-45046)
+====
+
+.Version 1.0.6 - 2021-12-13
+[caption=]
+====
+[IMPORTANT]
+SECURITY UPDATE! Upgrade Log4j2 version to 2.15.0 due to a zero-day vulnerability (CVE-2021-44228)
+
+* Downgrade required version of java from 11 to 8
+====
+
+.Version 1.0.5 - 2021-11-11
+[caption=]
+====
+* Fix initialization on server startup.
+* Add support to use user's workplace_id as a context variable in ABAC policy
+====
+
+.Version 1.0.4 - 2021-11-11
+[caption=]
+====
+[WARNING]
+Artifact is broken. It fails on server startup.
+====
+
+.Version 1.0.3 - 2021-11-11
+[caption=]
+====
+[WARNING]
+Artifact is broken. It fails on server startup.
+====
+
+.Version 1.0.2 - 2021-11-11
+[caption=]
+====
+[WARNING]
+Artifact is broken. It fails on server startup.
+====
+
+.Version 1.0.1 - 2020-12-14
+[caption=]
+====
+* Add support for centralized configuration of external systems
+====
+
+.Version 1.0.0 - 2020-06-15
+[caption=]
+====
+* Initial release
+====
+
+
