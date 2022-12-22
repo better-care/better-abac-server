@@ -1,0 +1,38 @@
+include::macros.adoc[]
+
+
+Conventions::
+This document uses the following symbolic conventions: +
++
+[%noheader,grid=rows,frame=topbot,stripes=none,cols="1,4a"]
+|===
+
+|``Courier text``
+|Courier text indicates filenames and their contents, computer input and output, program code, etc. For example:
+“To see the status of server, type ``ps -ef \| grep java.``”
+
+|_Italicized text_
+|Italic text indicates document titles, parameters, emphasized text and replaceable text.
+
+|*bold text*
+|Bold text indicates emphasized text.
+
+|<angle brackets>
+|Angle brackets indicate generic variable names that must be substituted by real values or strings.
+
+|===
+
+
+We welcome your comments::
+Your feedback on the information in this guide is important to us. Please send your comments about this guide to make it even clearer and more accurate.
+
+Browser support::
+Our products work with all the latest major browser releases and do not require any special additions, extensions or previous setup. We discourage using Internet Explorer at all. +
++
+We do support: +
++
+* Edge 17+,
+* Chrome 60+,
+* Firefox 56+,
+* Safari 11+,
+* Opera 50+.

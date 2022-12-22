@@ -46,5 +46,7 @@ abac.configValidationEnabled=true
 spring.datasource.hikari.register-mbeans=true
 
 # Spring Boot Actuator
+management.security.enabled=false
 management.endpoint.health.show-details=always
 management.endpoints.web.base-path=/
+management.endpoints.web.exposure.include=info, health, metrics, prometheus

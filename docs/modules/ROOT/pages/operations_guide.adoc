@@ -1,0 +1,149 @@
+[.platform]
+
+= ABAC server: Operations Guide
+Better <platform@better.care>
+
+include::partial$legal.adoc[]
+
+include::partial$conventions.adoc[]
+
+== Preface
+
+This guide describes how to administer ABAC Server.
+
+== Using the ABAC Server
+
+ABAC server is an implementation of attribute based access control,
+which allows writing access rules based on relations between parties and attributes defined within access context.
+Most of the configuration can be done via administration console, which can be accessed under server's base URL.
+Only users with role 'ROLE_ADMIN' can access the console!
+
+=== Parties and relations
+In ABAC, we are assessing relationships between different entities - parties. Each instance of a party is defined by its unique id and a set of external identifiers coming from external systems
+- for example a patient has and EHR id from EHR server and a Patient resource id from Demographics server.
+A party can be of any type you define: a user, a patient, user group, care plan, other resources - anything you need to refer to in the ABAC system.
+
+image::party.png[Creating a party]
+
+Relationship between two parties is defined by a relation - each party can have any number of relations of any allowed types between them.
+
+image::relation.png[Creating a relation]
+
+==== Party and relation type
+Each instance of a party and relation must be of a specific type (user, patient, doctor...).
+
+image::party_type.png[Creating a party type]
+
+Relation type also defines which party types can be the source of a relationship and which
+party types can be the target.
+
+image::relation_type.png[Creating a relation type]
+
+=== Policies
+
+A policy is a "rule" that returns a boolean answer - Yes or No, and can be used for controlling access or filtering the resources. If the policy returns a positive result, the action or access is allowed, otherwise content is filtered or inaccessible.
+Policies are created and updated within ABAC admin console and are written in Policy Definition Language (PDL). PDL has predefined policy functions to evaluate party relations and context variables.
+Context variables are accessed with prefix 'ctx' - for example ctx.user returns id of user. Literal function parameters must be encapsulated with single quatation marks - for example 'ROLE_USER'
+Policy functions can be further grouped and evaluated using function quantifiers - any, all...
+
+image::policy.png[Editing a policy]
+
+==== Policy functions
+
+* hasAnyRole('ROLE1', 'ROLE2', ...)
+** Returns true if the calling user has any of the roles passed as a function parameters. Can have any number of roles as parameters. +
+Example: hasAnyRole('ROLE_USER', 'ROLE_ADMIN') - returns true if user has either ROLE_USER or ROLE_ADMIN.
+
+* hasRelation(sourceParty, 'RELATION_TYPE', targetParty)
+** Returns true if the relation of provided type exists between source and target party. +
+Example: hasRelation(ctx.user, 'PERSONAL_PHYSICIAN', ctx.patient) - returns true if context user has relation of type PERSONAL_PHYSICIAN with context patient.
+
+* hasAnyRelation(sourceParty, targetParty, 'RELATION_ONE', 'RELATION_TWO', ...)
+** Returns true if any of the relation of provided types exists between source and target party. +
+Example: hasAnyRelation(ctx.user, ctx.patient, 'PERSONAL_PHYSICIAN', 'ATTENDING_DOCTOR') - returns true if context user has relation of type PERSONAL_PHYSICIAN or ATTENDING_DOCTOR with context patient.
+
+* hasRelationChain(sourceParty, targetParty, 'RELATION_ONE', 'RELATION_TWO', ...)
+** Returns true if there exists a transitive relationship between source and target party consisting of relation types in same order as specified by function parameters. +
+Example: hasRelationChain(ctx.user, ctx.patient, 'MEMBER', 'ASSIGNED_TO') - returns true if context user has a relation of type MEMBER with any party (for example CARE_TEAM)
+         which has a relation of type ASSIGNED_TO with context patient.
+
+* isAuthenticated()
+** Returns true if the calling user is authenticated
+
+==== Policy quantifiers
+
+* ALL_OF(f1, f2, q(f3, f4,...), ...)
+
+** Returns true if all the parameter evaluations return true. +
+Example: ALL_OF(hasAnyRole('ROLE_USER', 'ROLE_ADMIN'), hasRelation(ctx.user, 'PERSONAL_PHYSICIAN', ctx.patient)) - returns true if user has either ROLE_USER or ROLE_ADMIN and if context user has relation of type PERSONAL_PHYSICIAN with context patient.
+
+* ANY_OF(f1, f2, q(f3, f4,...), ...)
+** Returns true if any of the parameter evaluations return true. +
+Example: ANY_OF(hasAnyRole('ROLE_USER', 'ROLE_ADMIN'), hasRelation(ctx.user, 'PERSONAL_PHYSICIAN', ctx.patient)) - returns true if user has either ROLE_USER or ROLE_ADMIN or if context user has relation of type PERSONAL_PHYSICIAN with context patient.
+
+==== Executing policies
+
+Policies can be executed via REST api HTTP POST at base server URL under /rest/v1/policy/execute/name/\{policyName} . Postman collection for the example scenario xref:attachment$abac_collection.json[JSON]
+
+=== Example scenarios
+
+==== Relation chain example
+Let's create an ABAC set of policies that will control access to specific resources, in our case a resource named CarePlan, that is managed in our Demographics server.
+We would like to group doctors in different care teams and allow each care team access to different care plans. The party types we need are User (doctors), CarePlan and CareTeam.
+
+To start with, we have four doctors, Jessie, John, Kira and Kent. They all represent a PARTY of PARTY TYPE User.
+We also define two PARTIES of PARTY TYPE CareTeam, namely Team_J and Team_K and two PARTIES of PARTY TYPE CarePlan, Plan_A and Plan_B
+Next, we define a RELATION of MEMBER and make Jessie and John MEMBERs to Team_J, Kira and Kent MEMBERs to Team_K.
+We also define a RELATION of type ASSIGNED_TO. Plan_A and Plan_B are two PARTIES, where first is ASSIGNED_TO to TEAM_J and second to TEAM_K.
+
+image::party_view.png[List of parties for first example scenario on a policy]
+
+So for example if we want to allow access to patient resources only to system administrators and doctors which are members of care teams that are responsible for patients care plan,
+we can define a following policy named DEMOGRAPHICS_CAREPLAN_READ and add it to Demographics server configuration:
+
+* ANY_OF(hasAnyRole('ROLE_ADMIN'), hasRelationChain(ctx.user, ctx.careplan, 'MEMBER', 'ASSIGNED_TO'))
+
+==== Token attribute example
+In this case the user token contains attribute value `workplace_id` which denotes identifier of an ORGANIZATION and restricts the user to patients that the ORGANIZATION MANAGES. For this scenario we'll create:
+
+* a Party Type `ORGANIZATION`
+* Relation Type `MANAGES` which is defined by Allowed Source Party Type=`ORGANIZATION` and Allowed Target Party Type=`PATIENT`
+
+and given these three parties:
+
+image::party_view1.png[List of parties for second example scenario on a policy]
+
+.these property values:
+[source,properties]
+----
+# SSO token attribute mapper
+sso.mapper[0].tokenAttributePath=workplace_id
+sso.mapper[0].contextKeyValue=workplaceId
+----
+.and `USER` auth token that contains:
+[source,json,linenums,highlight='14']
+----
+{
+  "workplace_id": "13602"
+}
+----
+.we can create a policy `FHIR_PATIENT_READ`:
+[source,javascript]
+----
+hasRelation(ctx.workplaceId, 'MANAGES', ctx.existingResource.id)
+----
+.and execute it by calling:
+[source,http,options="nowrap"]
+----
+POST /rest/v1/policy/execute/name/FHIR_PATIENT_READ HTTP/1.1
+Host: <abac_server_host_and_port>
+Authorization: Bearer <token_value>
+Content-Type: application/json
+Content-Length: 55
+
+{
+  "existingResource": {
+    "id": "13603"
+  }
+}
+----
